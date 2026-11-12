@@ -30,7 +30,7 @@ Dit is alleen een preview in deze repository. Er is niets gedeployed, GitHub Pag
 
 ## Kaart met de huidige ligging
 
-Bij drie namen toont de popup, direct onder "wie of wat", een compacte kaart. U ziet de huidige ligging, geen historische reconstructie en geen bijbelse grens. Foto's zijn nog niet opgenomen.
+Bij drie namen toont de popup, direct onder "wie of wat", een compacte kaart. U ziet de huidige ligging, geen historische reconstructie en geen bijbelse grens. Bij die drie namen, en bij een aantal andere bekende plaatsen, staat daarnaast een foto of een historische kaart. Elke afbeelding heeft een auteur, een licentienaam en een link. Een naam zonder gelicenseerde afbeelding krijgt geen leeg vak. Van personen wordt geen portret getoond.
 
 | Naam | Link | Wat u op de kaart ziet |
 |---|---|---|
@@ -56,11 +56,11 @@ Deze bestanden zijn bij de bouw alleen gelezen. Ze staan niet in deze repository
 ## Tellingen (bouw 12-11-2026)
 
 - Tekstblokken (verzen of versgroepen): 17.402
-- Geëxtraheerde namen: **2.784**
+- Geëxtraheerde namen: **2.808** (2.784 plus 24 personen die de studiebijbel zelf uit een gedeelde naam haalt)
 
 | Soort | Aantal | zeker | waarschijnlijk | onzeker |
 |---|---|---|---|---|
-| Personen | 1.425 | 186 | 483 | 756 |
+| Personen | 1.449 | 186 | 507 | 756 |
 | Volken/stammen | 255 | 0 | 117 | 138 |
 | Steden | 715 | 713 | 0 | 2 |
 | Landen | 65 | 12 | 51 | 2 |
@@ -89,8 +89,8 @@ Deze bestanden zijn bij de bouw alleen gelezen. Ze staan niet in deze repository
 1. De RTF-kleuren onderscheiden landen niet apart, want zwart = alle geografie. Daardoor kan een land dat niet in de naamlijst staat als "stad" verschijnen (bijv. Macedonië of Asia).
 2. 756 personen zijn "onzeker". Daar kan ruis tussen zitten, zoals woorden die alleen met een hoofdletter voorkomen.
 3. 241 namen hebben de soort "onbepaald". Dat zijn vooral namen die maar 1x voorkomen (rode eerste en laatste letter) in geslachtsregisters.
-4. Personen met dezelfde naam worden alleen gescheiden als de studiebijbel een volgnummer gebruikt (Jerobeam I/II). Zonder nummer vallen ze samen (bijv. Saul).
-5. Feiten komen uit eenvoudige zinspatronen. Bij opsommingen ("de dochter van A / de zoon van B / de zuster van C") kan een verband verkeerd worden toegekend. Kettingen na "van" zijn wel uitgefilterd.
+4. Personen met dezelfde naam worden gescheiden als de studiebijbel dat zelf duidelijk doet, ook zonder volgnummer. Saul blijft op `#/e/380` (zoon van Kis II, koning). Saul* uit Rechobot, de zoon van Simeon I, en Saulus (in Handelingen aangesproken als Saul) hebben een eigen pagina. Hetzelfde geldt voor andere duidelijke naamgenoten, zoals Johannes de Doper, Jozef van Arimatea en Judas Iskariot naast de andere Judas. Onzekere namen zijn niet massaal gesplitst.
+5. Feiten komen uit eenvoudige zinspatronen. In de popup is "zoon van", "koning van" en een verwante rol een link naar `#/e/…` als de tekst één persoon of plaats aanwijst. Een keten ("dochter van A / zoon van B") of een naam die na de splitsing nog dubbelzinnig is, blijft gewone tekst. Een datering verschijnt alleen als de studiebijbel die zelf bij de naam zet, bijvoorbeeld de tijdmarkering `[-3300 / 460]` of "1050 voor Christus" bij Saul.
 6. Studynotes worden aan een naam gekoppeld als de naam in de aantekening staat, niet via het vers.
 7. Godsnamen (Elohim, YHWH, Adonay, Kyrios/Theos …) en afgoden (Baal, Dagon, Molech …) zijn bewust niet als wiki-item opgenomen.
 8. Maandnamen (groene achtergrond in de legenda) zijn niet opgenomen.

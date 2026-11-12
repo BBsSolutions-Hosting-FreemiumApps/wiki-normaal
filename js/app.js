@@ -18,6 +18,7 @@ SBW.gotMeta=function(m){SBW.meta=m;};
 SBW.gotBook=function(i,d){SBW.books[i]=d;};
 SBW.gotEnts=function(d){for(var k in d) SBW.ents[k]=d[k];};
 SBW.gotGeo=function(g){SBW.geo=g;};
+SBW.gotMedia=function(g){SBW.media=g;};
 function book(i){return SBW.books[i]?Promise.resolve(SBW.books[i]):load('data/b/'+i+'.js').then(function(){return SBW.books[i];});}
 function ent(id){var m=SBW.meta; if(SBW.ents[id]) return Promise.resolve(SBW.ents[id]); return load('data/e'+(id%m.nch)+'.js').then(function(){return SBW.ents[id];});}
 function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[-'’·ʼ`‘ ]/g,'').toLowerCase();}
@@ -152,12 +153,23 @@ function mountLigging(el, plaats){
   setTimeout(function(){ if(ligging===state){ fit(); state.ready=true; } },500);
 }
 /* ---------- popup ---------- */
+function rich(s){
+  var h='', re=/\[\[(\d+)\|([^\]]+)\]\]/g, last=0, m;
+  s=String(s);
+  while((m=re.exec(s))){
+    h+=esc(s.slice(last,m.index));
+    h+='<a class="rel" href="#/e/'+m[1]+'" data-e="'+m[1]+'">'+esc(m[2])+'</a>';
+    last=re.lastIndex;
+  }
+  h+=esc(s.slice(last));
+  return h;
+}
 function factLine(f){
   var kind=f[0],t=f[1],r=f[2];
   var lbl={rel:'',kind:'',rel2:'',rol:'',heerser:'Als koning/vorst hier genoemd: ',dood:'',tijd:'',gen:'Generatiemarkering: '}[kind]||'';
   var txt=lbl+t; txt=txt.charAt(0).toUpperCase()+txt.slice(1);
   var href=refHref(r);
-  return '<li>'+esc(txt)+(r?' — '+(href?'<a href="'+href+'">'+esc(r)+'</a>':esc(r)):'')+'</li>';
+  return '<li>'+rich(txt)+(r?' — '+(href?'<a href="'+href+'">'+esc(r)+'</a>':esc(r)):'')+'</li>';
 }
 function openEnt(id){
   var M=SBW.meta,row=M.ents[id]; if(!row) return;
@@ -174,11 +186,25 @@ function openEnt(id){
     // wie of wat
     var who=[];
     if(d.ov) who.push(esc(d.ov));
-    if(d.role.length) who.push(esc(cap(T[0]))+': '+esc(d.role.join('; '))+'.');
+    if(d.role.length) who.push(esc(cap(T[0]))+': '+d.role.map(rich).join('; ')+'.');
     else who.push(esc(cap(T[0]))+(row[1]==='U'?' (soort niet vast te stellen uit de tekst)':'')+'.');
     var first=d.q.length?d.q[0]:null;
     if(first) who.push('Eerst genoemd in <a href="'+blockHref(first[0])+'">'+esc(M.blk[first[0]][2])+'</a>.');
     h+='<p class="who">'+who.join(' ')+'</p>';
+    if(d.dq||(d.ook&&d.ook.length)){
+      h+='<div class="same">';
+      if(d.dq) h+='<p>In de tekst onderscheiden als: <b>'+esc(d.dq)+'</b>.</p>';
+      var others=(d.ook||[]).filter(function(i){return M.ents[i];});
+      if(others.length){
+        h+='<p>Andere personen die de tekst onderscheidt: ';
+        h+=others.map(function(i){
+          var e=M.ents[i];
+          var q=e.length>5&&e[5]?' · '+esc(e[5]):'';
+          return '<a href="#/e/'+i+'" data-e="'+i+'">'+esc(e[0])+q+'</a>';
+        }).join('')+'</p>';
+      }
+      h+='</div>';
+    }
     var plaats=SBW.geo&&SBW.geo.plaatsen&&SBW.geo.plaatsen[id];
     if(plaats){
       h+='<section class="ligging" aria-label="Ligging"><h3>Ligging</h3>';
@@ -187,7 +213,27 @@ function openEnt(id){
       if(plaats.bijschrift) h+='<p class="map-cap">'+esc(plaats.bijschrift)+'</p>';
       h+='<p class="small">Bron: OpenStreetMap, via Nominatim (12 november 2026). <a class="osm-credit" href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">© OpenStreetMap-bijdragers</a></p></section>';
     }
-    if(d.kp&&d.kp.length){d.kp.forEach(function(k){ if(!k.info.length) return; h+='<div class="kp"><b>Koningsprofiel uit de studiebijbel</b><br>'+esc(k.h)+'<br>'+k.info.map(esc).join('<br>')+'</div>';});}
+    var beelden=SBW.media&&SBW.media.beelden&&(SBW.media.beelden[id]||SBW.media.beelden[String(id)]);
+    if(beelden&&beelden.length){
+      h+='<section class="beelden" aria-label="Afbeeldingen"><h3>'+(beelden.length>1?'Afbeeldingen':'Afbeelding')+'</h3>';
+      beelden.forEach(function(im){
+        h+='<figure class="fig'+(im.soort==='kaart'?' kaart':'')+'">';
+        h+='<img src="'+esc(im.src)+'" alt="'+esc(im.alt)+'">';
+        h+='<figcaption>'+esc(im.bijschrift)+'<br>Auteur: '+esc(im.auteur)+'. Licentie: <a href="'+esc(im.licentieUrl)+'" rel="noopener noreferrer" target="_blank">'+esc(im.licentie)+'</a>. Bron: <a href="'+esc(im.bronUrl)+'" rel="noopener noreferrer" target="_blank">'+esc(im.bron)+'</a>.</figcaption>';
+        h+='</figure>';
+      });
+      h+='</section>';
+    }
+    if(d.tl&&d.tl.length){
+      h+='<section class="tijd" aria-label="Datering"><h3>Datering in de studiebijbel</h3>';
+      h+='<p class="small">Deze jaartallen en tijdmarkeringen staan in de studiebijbel. Er is geen jaartal uit een andere chronologie bij gezet.</p><ul class="tl">';
+      h+=d.tl.map(function(t){
+        var href=t[1]?refHref(t[1]):null;
+        return '<li>'+rich(t[0])+(t[1]?' — '+(href?'<a href="'+href+'">'+esc(t[1])+'</a>':esc(t[1])):'')+'</li>';
+      }).join('');
+      h+='</ul></section>';
+    }
+    if(d.kp&&d.kp.length){d.kp.forEach(function(k){ if(!k.info.length) return; h+='<div class="kp"><b>Koningsprofiel uit de studiebijbel</b><br>'+rich(k.h)+'<br>'+k.info.map(rich).join('<br>')+'</div>';});}
     var facts=d.facts.filter(function(f){return f[0]!=='heerser';}),rul=d.facts.filter(function(f){return f[0]==='heerser';});
     if(facts.length){h+='<h3>Wat de tekst over '+(row[1]==='P'?'deze persoon':'deze naam')+' zegt</h3><ul class="facts">'+facts.slice(0,14).map(factLine).join('')+'</ul>';}
     if(rul.length){h+='<h3>Koningen of vorsten van '+esc(d.n)+'</h3><ul class="facts">'+rul.slice(0,12).map(function(f){return factLine(['',f[1].replace(/ \(.*\)$/,''),f[2]]);}).join('')+'</ul>';}
@@ -198,7 +244,11 @@ function openEnt(id){
     h+='<div class="refs" id="refs">'+refs.slice(0,40).join('')+(refs.length>40?' <button id="moreRefs">Alle '+refs.length+(d.on>refs.length?' (van '+d.on+')':'')+' tonen</button>':'')+'</div>';
     if(d.nt.length){h+='<h3>Aantekeningen (studynotes)</h3>'+d.nt.map(function(i){var n=M.notes[i],hr=n.r?refHref(n.r):null;return '<div class="note"><span class="small">['+n.n+']'+(n.r?' · '+(hr?'<a href="'+hr+'">'+esc(n.r)+'</a>':esc(n.r)):'')+'</span><br>'+decorate(n.t)+'</div>';}).join('')+(d.ntn>d.nt.length?'<p class="small">Nog '+(d.ntn-d.nt.length)+' aantekening(en) noemen deze naam.</p>':'');}
     h+='<h3>Waarop deze indeling berust</h3><p class="why">'+esc(C[1])+'.<br>'+d.why.map(esc).join('<br>')+(d.lst?'<br>Ook in de naamlijst van deze wiki als '+esc(T[0])+'.':'')+'</p>';
-    h+='<p class="small">'+(plaats?'De verzen, feiten en aantekeningen komen letterlijk uit de Elohim YHWH Studiebijbel v9 en de studynotes; er is niets bijgeschreven. De kaart hoort daar niet bij.':'Alles hierboven komt letterlijk uit de Elohim YHWH Studiebijbel v9 en de studynotes; er is niets bijgeschreven.')+' <a href="#/e/'+id+'">Vaste link</a></p>';
+    var slotTxt='De verzen en feiten komen uit de Elohim YHWH Studiebijbel v9 en de studynotes. Er is geen biografie bijgeschreven.';
+    if(d.tl&&d.tl.length) slotTxt+=' De datering is daaruit overgenomen.';
+    if(plaats) slotTxt+=' De kaart hoort daar niet bij: u ziet de huidige ligging.';
+    if(beelden&&beelden.length) slotTxt+=' De afbeelding hoort daar niet bij; auteur en licentie staan erbij.';
+    h+='<p class="small">'+slotTxt+' <a href="#/e/'+id+'">Vaste link</a></p>';
     pbody.innerHTML=h; pbody.scrollTop=0;
     var slot=document.getElementById('ligging-map');
     if(slot){
@@ -238,7 +288,7 @@ function renderWiki(type,q){
     });
     rows.sort(function(a,b){return M.ents[b][3]-M.ents[a][3]||M.ents[a][0].localeCompare(M.ents[b][0],'nl');});
     var lim=qq?300:1600;
-    list.innerHTML=rows.slice(0,lim).map(function(i){var e=M.ents[i];return '<a href="#/e/'+i+'" data-e="'+i+'"><span class="dot d-'+e[2]+'"></span>'+esc(e[0])+' <span>'+(qq?TYPES[e[1]][0]+' · ':'')+e[3]+'x</span></a>';}).join('')+(rows.length>lim?'<p class="small">… en nog '+(rows.length-lim)+' namen. Gebruik het zoekveld.</p>':'')+(rows.length?'':'<p>Geen namen gevonden.</p>');
+    list.innerHTML=rows.slice(0,lim).map(function(i){var e=M.ents[i];var qual=e.length>5&&e[5]?' <i class="qual">'+esc(e[5])+'</i>':'';return '<a href="#/e/'+i+'" data-e="'+i+'"><span class="dot d-'+e[2]+'"></span>'+esc(e[0])+qual+' <span>'+(qq?TYPES[e[1]][0]+' · ':'')+e[3]+'x</span></a>';}).join('')+(rows.length>lim?'<p class="small">… en nog '+(rows.length-lim)+' namen. Gebruik het zoekveld.</p>':'')+(rows.length?'':'<p>Geen namen gevonden.</p>');
   }
   draw();
   document.getElementById('q').oninput=function(){draw(); app.querySelectorAll('.tabs button').forEach(function(b){b.classList.toggle('on',!this.value&&b.dataset.t===type);},this);};
@@ -250,8 +300,8 @@ function renderOver(){
   app.innerHTML='<section class="page"><h1>Over deze wiki</h1>'+
   '<p class="notice">Dit is een voorbeeld (preview). Het staat niet online en is nog niet gecontroleerd door de redactie.</p>'+
   '<p>Deze wiki is gemaakt uit de Elohim YHWH Studiebijbel 2026 (v9) van Jan Smit, de bijbehorende studynotes en de officiële legenda. U leest de tekst per boek en hoofdstuk; namen van personen, volken, steden, landen, rivieren, meren, zeeën en regio’s zijn aan te tikken.</p>'+
-  '<h2>Wat staat er in een popup?</h2><ol><li>Wie of wat het is, en waarop dat berust (legendakleur, zinnen in de tekst of een naamlijst).</li><li>Bij Jeruzalem, Egypte en de rivier de Jordaan: een kaart met de huidige ligging.</li><li>Wat de tekst zelf zegt: “zoon van”, “koning van”, “verwekte”, generatiemarkeringen en de koningsprofielen uit de studiebijbel.</li><li>De belangrijkste verzen, letterlijk geciteerd, met een link.</li><li>Alle plaatsen waar de naam voorkomt en de aantekeningen die de naam noemen.</li></ol>'+
-  '<p>De kaart toont de huidige ligging uit OpenStreetMap (Nominatim, 12 november 2026), geen historische reconstructie. Bij Egypte ziet u de moderne landsgrens, geen bijbelse grens. Foto’s zijn nog niet opgenomen. Andere namen hebben geen kaart.</p>'+
+  '<h2>Wat staat er in een popup?</h2><ol><li>Wie of wat het is, en waarop dat berust (legendakleur, zinnen in de tekst of een naamlijst).</li><li>Als de studiebijbel dezelfde naam voor verschillende personen gebruikt, een korte aanduiding uit de tekst en een link naar de anderen.</li><li>Bij Jeruzalem, Egypte en de rivier de Jordaan: een kaart met de huidige ligging.</li><li>Bij een aantal bekende plaatsen: een foto of een historische kaart, met auteur, licentie en bron.</li><li>Wat de tekst zelf zegt. “Zoon van”, “koning van” en verwante woorden zijn een link als de tekst één persoon of plaats aanwijst.</li><li>Een datering, alleen als de studiebijbel die zelf bij de naam zet.</li><li>De belangrijkste verzen, letterlijk geciteerd, met een link.</li><li>Alle plaatsen waar de naam voorkomt en de aantekeningen die de naam noemen.</li></ol>'+
+  '<p>De kaart toont de huidige ligging uit OpenStreetMap (Nominatim, 12 november 2026), geen historische reconstructie. Bij Egypte ziet u de moderne landsgrens, geen bijbelse grens. Een naam zonder regel in de kaartgegevens krijgt geen kaart. Een naam zonder gelicenseerde afbeelding krijgt geen leeg vak. Van personen wordt geen portret getoond.</p>'+
   '<p>Er worden geen levensverhalen bijgeschreven. Staat er in de tekst niets over de rol of het doel van iemand, dan blijft de popup kort en verwijst naar de verzen.</p>'+
   '<h2>Tellingen</h2><table class="stat"><tr><td><b>Soort</b></td><td><b>Aantal</b></td><td><b>zeker / waarschijnlijk / onzeker</b></td></tr>'+rows+'<tr><td><b>Totaal</b></td><td><b>'+S.entiteiten+'</b></td><td></td></tr></table>'+
   '<p class="small">Tekstblokken (verzen of versgroepen): '+S.blokken+'. Aantekeningen: '+SBW.meta.notes.length+'.</p>'+
@@ -272,6 +322,7 @@ function route(){
 }
 Promise.all([
   load('data/meta.js'),
-  load('data/geo.js').catch(function(){SBW.geo={plaatsen:{}};})
+  load('data/geo.js').catch(function(){SBW.geo={plaatsen:{}};}),
+  load('data/media.js').catch(function(){SBW.media={beelden:{}};})
 ]).then(function(){window.addEventListener('hashchange',route); route();}).catch(function(e){app.innerHTML='<p>'+esc(e.message)+'</p>';});
 })();
