@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Elohim YHWH Studiebijbel · Wiki (voorbeeld)</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><a href="#/lees">Elohim YHWH Studiebijbel</a><span class="tag">Wiki · voorbeeld</span></div>
+  <nav>
+    <a href="#/lees" data-nav="lees">Lezen</a>
+    <a href="#/wiki" data-nav="wiki">Wiki</a>
+    <a href="#/legenda" data-nav="legenda">Legenda</a>
+    <a href="#/over" data-nav="over">Over</a>
+  </nav>
+</header>
+<main id="app"><p class="loading">De gegevens worden geladen…</p></main>
+
+<aside id="panel" class="panel" hidden aria-live="polite">
+  <div class="panel-head"><button id="panelClose" aria-label="Sluiten">×</button></div>
+  <div id="panelBody" class="panel-body"></div>
+</aside>
+<div id="tip" class="tip" hidden></div>
+
+<template id="tpl-legenda">
+<section class="page legenda">
+<h1>Legenda</h1>
+<p class="lead">Deze uitleg volgt de officiële <em>Legenda.rtf</em> van de Elohim YHWH Studiebijbel (bijgewerkt 12 november 2026). De kleuren hieronder zijn rechtstreeks uit dat bestand overgenomen.</p>
+
+<h2>Kleuren en markeringen</h2>
+<table class="lg">
+<tr><td><span style="color:#fb02ff">Door Elohim / El / Yahweh / Yah / Adonay / YHWH of </span><span style="color:#7f0080">engelen</span><span style="color:#fb02ff"> gesproken teksten</span></td><td>Magenta tekst: woorden die Elohim, YHWH of engelen spreken.</td></tr>
+<tr><td><b style="color:#7f0080;background:#ffff0a">Zebaoth [van de Heerscharen]</b></td><td>Paars op geel.</td></tr>
+<tr><td><b style="color:#0000ff;background:#ffff0a">wa-do-nay [mijn Heer]</b></td><td>Blauw op geel.</td></tr>
+<tr><td><b style="color:#fb02ff">YHWH</b> <b style="color:#7f0080;background:#ffff0a">Zebaoth</b></td><td>Deze combinatie komt 261x voor.</td></tr>
+<tr><td><b style="color:#fb02ff;background:#ffff0a">Adonay YHWH</b> <span style="color:#fb0207">[Here HERE 1970] [Here Here 1951]</span></td><td>Deze combinatie komt 290x voor.</td></tr>
+<tr><td><span style="color:#0000ff">[</span><span style="color:#fb02ff">E</span><span style="color:#0000ff">]</span> <b style="color:#fb02ff">Elohim</b> <span style="color:#fb02ff">gesproken</span></td><td>[E] Elohim spreekt</td></tr>
+<tr><td><span style="color:#fb02ff">[</span><span style="color:#7f0080">E</span><span style="color:#fb02ff">E]</span> <b style="color:#7f0080">Engel</b> <span style="color:#fb02ff">van</span> <b style="color:#fb02ff">Elohim</b></td><td>[EE] de Engel van Elohim spreekt</td></tr>
+<tr><td><span style="color:#0000ff">[</span><span style="color:#fb02ff">Y</span><span style="color:#0000ff">]</span> <b style="color:#fb02ff">YHWH</b> <span style="color:#fb02ff">gesproken</span></td><td>[Y] YHWH spreekt</td></tr>
+<tr><td><span style="color:#0000ff">[</span><span style="color:#7f0080">E</span><span style="color:#fb02ff">Y</span><span style="color:#0000ff">]</span> <b style="color:#7f0080">Engel</b> <span style="color:#fb02ff">van</span> <b style="color:#fb02ff">YHWH</b></td><td>[EY] de Engel van YHWH spreekt</td></tr>
+<tr><td><span style="color:#fb02ff">{{1/69}}</span> <b style="color:#fb02ff">YHWH <i>sprak</i></b> <b style="color:#0000ff"><i>tot</i></b> <b style="color:#0000ff;background:#47ccfc">Mozes</b></td><td>Telling van “YHWH sprak tot Mozes”.</td></tr>
+<tr><td><span style="color:#fb0207">[</span><span style="color:#fb02ff">Y</span><span style="color:#fb0207">W]</span></td><td>Wetten door YHWH zelf direct uitgesproken en opgelegd</td></tr>
+<tr><td><span style="color:#fb0207">[</span><span style="color:#fb02ff">Y</span><span style="color:#0000ff">P</span><span style="color:#fb0207">]</span></td><td>Wetten van YHWH, opgelegd aan de priesters</td></tr>
+<tr><td><span style="color:#fb0207">[</span><span style="color:#fb02ff">Y</span><span style="color:#0000ff">L</span><span style="color:#fb0207">]</span></td><td>Wetten van YHWH, opgelegd aan de Levieten</td></tr>
+<tr><td><span style="color:#fb0207">[</span><span style="color:#0000ff">M</span><span style="color:#fb0207">W]</span></td><td>Wetten door Mozes aan het volk doorgegeven</td></tr>
+<tr><td><span style="color:#0000ff">&lt;’ā·ḏām&gt;</span></td><td>Hebreeuwse naam of vorm</td></tr>
+<tr><td><span style="color:#fb0207">[{‘naam’}]</span></td><td>Afwijkende naam uit een ander bijbelboek</td></tr>
+<tr><td><span style="color:#fb0207">[(naam)]</span></td><td>Toelichting op een naam</td></tr>
+<tr><td><span style="color:#fb0207">[naam]</span></td><td>Bij “hij/zij”: om wie het gaat</td></tr>
+<tr><td><span style="color:#fb0207">[{1e generatie stamvaders}]</span></td><td>Generatie-aanduiding van stamvaders</td></tr>
+<tr><td><span style="color:#fb0207">{bijbelboek}</span></td><td>Verwijzing naar dezelfde tekst met grote overeenkomst(en)</td></tr>
+<tr><td><span style="color:#fb0207">[{bijbelboek}}</span></td><td>Verwijzing naar dezelfde tekst met kleine overeenkomst(en)</td></tr>
+<tr><td><span style="color:#fb0207">[[bijbelboek]]</span></td><td>Verwijzing naar waar een gebeurtenis plaatsvond</td></tr>
+<tr><td><span>[[[naam]]]</span></td><td>Verwijzing naar apocriefe boeken (bijv. [[[Sefer-Hayasher]]], [[[3 Ezra]]], [[[4 Ezra]]])</td></tr>
+<tr><td><b style="color:#7f0080">ruach = {<span style="background:#cadbfe">Geest}</span></b></td><td>Ruach = Geest</td></tr>
+<tr><td><span style="color:#fb02ff">Is-ra-el-ieten &gt; de </span><span style="color:#0000ff;background:#c2e5a6">[zonen van]</span><span style="color:#fb02ff"> Yiś·rā·’êl</span></td><td>Is-ra-el-ieten: de zonen van Jakob</td></tr>
+<tr><td><span style="color:#fb02ff;background:#d9eaca">Judeeers</span> / <b style="background:#d9eaca"><span style="color:#fd8008">K</span><span style="color:#0000ff">oningnaam</span></b> / <span style="color:#0000ff;background:#d9eaca">volk</span></td><td>Lichtgroene achtergrond: Juda (Judeeërs, koningen van Juda, volk)</td></tr>
+<tr><td><span style="color:#fb02ff;background:#21ffff">Is-ra-el-ieten</span> / <b style="background:#21ffff"><span style="color:#fd8008">K</span><span style="color:#0000ff">oningnaam</span></b> / <span style="color:#0000ff;background:#21ffff">volk</span></td><td>Cyaan achtergrond: Is-ra-el (Is-ra-el-ieten, koningen van Is-ra-el, volk)</td></tr>
+<tr><td><span style="color:#996633">Door ‘Satan’ gesproken teksten</span></td><td>Bruin</td></tr>
+<tr><td><b style="color:#fd8008">Regels in oranje</b></td><td>Opmerkelijke regels voor nader onderzoek</td></tr>
+<tr><td>Woorden in <b style="color:#fb0207">rood</b></td><td>Voor de eerste keer gebruikt in de Bijbel</td></tr>
+<tr><td><b><span style="color:#fb0207">e</span><span style="color:#042939">erste</span><span style="color:#0000ff">laatste</span><span style="color:#042939">lette</span><span style="color:#fb0207">r</span></b></td><td>Rode eerste en laatste letter: woord komt 1x voor in de Bijbel</td></tr>
+<tr><td><b style="color:#000">steden</b> / <b><span style="color:#fb0207">s</span><span style="color:#000">tede</span><span style="color:#fb0207">n</span> {1x}</b> / <i style="color:#000">rivieren &amp; meren &amp; zee-en &amp; regio</i></td><td>Zwart: steden; stad met rode eerste/laatste letter komt 1x voor; zwart cursief: rivieren, meren, zeeën en regio’s</td></tr>
+<tr><td><span style="color:#0000ff;background:#21ff06"><b>Maand</b>en</span> van het jaar</td><td>Maanden</td></tr>
+<tr><td>luidt het <span style="color:#fb02ff">woord</span> van <b style="color:#fb02ff">YHWH (270x)</b></td><td>Vaste formule, 270x</td></tr>
+<tr><td><span style="color:#0000ff">… vers</span> <span style="color:#000">|</span> <span style="color:#0000ff">vers …</span></td><td>Verticaal streepje: daar stond oorspronkelijk een versnummer (het versnummer staat nu bij het begin)</td></tr>
+<tr><td><b style="color:#ffff0a;background:#000">[[[[The Chronological Study Bible]]]]</b></td><td>Verplaatst volgens The Chronological Study Bible</td></tr>
+<tr><td><span style="color:#0000ff;background:#d9eaca">Abram</span> = Ab-ram · <span style="color:#0000ff;background:#d9eaca">Abraham</span> = Ab-ra-ham · <span style="color:#0000ff;background:#cfbbfe">Ismael</span> = Isma-el · <span style="color:#0000ff;background:#c2e5a6">Isaak</span> = Yis-haq · <span style="color:#0000ff;background:#d9eaca">Jakob</span> = Ya-a-qob</td><td>Aangepaste namen</td></tr>
+<tr><td>Stammen van <span style="color:#0000ff;background:#21ffff">Is-ra-el</span> · Stammen van <span style="color:#0000ff;background:#d9eaca">Juda/Benjamin</span></td><td>Stammen</td></tr>
+<tr><td>Namen van <span style="color:#0000ff;background:#c0edfe">priesters</span></td><td>Lichtblauwe achtergrond</td></tr>
+<tr><td><b><span style="color:#fb02ff">P</span><span style="color:#0000ff">rofetennamen</span></b></td><td>Magenta beginletter</td></tr>
+<tr><td><b style="color:#7f0080;background:#fee8cb">(#) Hoofdstuknaam</b></td><td>Kopje boven een gedeelte</td></tr>
+</table>
+
+<h2>Codes</h2>
+<table class="lg codes">
+<tr><td>(#)</td><td>Hoofdstuknaam</td></tr>
+<tr><td>{#}</td><td>Seizoensaanduiding (30x)</td></tr>
+<tr><td>[§]</td><td>Verbond (279x)</td></tr><tr><td>{§}</td><td>Wet(ten)</td></tr>
+<tr><td>[#]</td><td>Commentaar (1718x)</td></tr>
+<tr><td>[C]</td><td>Contradictie tussen verzen (34x)</td></tr>
+<tr><td>[?] [##]</td><td>Vragen die nog opgelost moeten worden (476x)</td></tr>
+<tr><td>[!] [###]</td><td>Waargenomen opmerkelijkheden (511x)</td></tr>
+<tr><td>[X]</td><td>Correctie doorgevoerd (26x)</td></tr>
+<tr><td>[=] / [-] / [‘=’] / [+]</td><td>Dubbele tekst: gelijk / ongelijk / gelijkgemaakt / extra aanvulling</td></tr>
+<tr><td>[{=}] / [{-}]</td><td>In de evangeliën: volledig gelijke / ongelijke tekst</td></tr>
+<tr><td>[[2]] / [[3]]</td><td>Twee- of driedubbele verzen</td></tr>
+</table>
+
+<h2>Hoe deze wiki de legenda gebruikt</h2>
+<ol class="how">
+<li>De bijbeltekst wordt getoond met de kleuren uit het RTF-bronbestand. U kunt de kleuren uitzetten met de knop “Kleuren” bij het lezen.</li>
+<li>Namen zijn klikbaar (stippellijn). De soort wordt vooral bepaald door de legendakleur: <b style="color:#000">zwart vet</b> = stad, <i style="color:#000">zwart cursief</i> = rivier, meer, zee of regio, <b><span style="color:#fd8008">o</span><span style="color:#00f">ranje beginletter</span></b> = koningsnaam, <b><span style="color:#fb02ff">m</span><span style="color:#00f">agenta beginletter</span></b> = profetennaam, lichtblauwe achtergrond = priester.</li>
+<li>Waar de kleur niets zegt, kijkt de wiki naar de zin zelf (“zoon van …”, “koning van …”, “het land …”, “rivier …”). Elke popup laat zien waarop de indeling berust en hoe zeker die is.</li>
+<li>De codes [E], [Y], [§], [!], [?] enzovoort tonen bij aantikken hun betekenis.</li>
+</ol>
+</section>
+</template>
+
+<script src="js/app.js"></script>
+</body>
+</html>
