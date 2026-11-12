@@ -28,6 +28,20 @@ Dit is alleen een preview in deze repository. Er is niets gedeployed, GitHub Pag
 4. **Legenda** (`#/legenda`): de kleuren en codes uit Legenda.rtf, met dezelfde kleurwaarden, plus uitleg over hoe de wiki ze gebruikt.
 5. **Over** (`#/over`): de bronnen, de tellingen en de uitleg van de zekerheid.
 
+## Kaart met de huidige ligging
+
+Bij drie namen toont de popup, direct onder "wie of wat", een compacte kaart. U ziet de huidige ligging, geen historische reconstructie en geen bijbelse grens. Foto's zijn nog niet opgenomen.
+
+| Naam | Link | Wat u op de kaart ziet |
+|---|---|---|
+| Jeruzalem | `#/e/216` | Een speld op de Oude Stad, ingezoomd op dat gebied. Bijschrift: "Huidige ligging van de Oude Stad van Jeruzalem." |
+| Egypte | `#/e/137` | Het moderne land als geheel, inclusief de Sinaï, zonder speld in de woestijn. Het bijschrift zegt dat dit de moderne landsgrens is, geen bijbelse grens. |
+| Jordaan (de rivier) | `#/e/141` | De huidige loop, van ten noorden van het Meer van Galilea tot de Dode Zee. |
+
+De coördinaten en de lichte omtrek of loop komen van OpenStreetMap, opgezocht via Nominatim op 12 november 2026 (Oude Stad: relatie 5862586, Egypte: relatie 1473947, Jordaan: relatie 2246907). De tegels zijn de standaardkaart van OpenStreetMap. Op de kaart en eronder staat: © [OpenStreetMap-bijdragers](https://www.openstreetmap.org/copyright).
+
+Verwante namen krijgen geen kaart: Egyptenaren, Egyptenaar, Egyptische en de stad Jordaanse. Een naam zonder regel in `data/geo.js` krijgt geen kaart en geen leeg vak. Dat bestand is klein en staat los van de naamgegevens, zodat later meer plaatsen kunnen worden toegevoegd zonder de popup opnieuw te schrijven. Leaflet 1.9.4 (BSD-2-Clause, licentie in `vendor/leaflet/LICENSE`) staat in de repository. De site laadt het lokaal, met relatieve paden, niet via een CDN.
+
 ## Bronnen (alleen gelezen)
 
 Deze bestanden zijn bij de bouw alleen gelezen. Ze staan niet in deze repository en zijn niet gewijzigd.
@@ -86,4 +100,4 @@ Deze bestanden zijn bij de bouw alleen gelezen. Ze staan niet in deze repository
 
 ## Bouw
 
-Deze repository bevat alleen de statische preview (`index.html`, `css/`, `js/`, `data/`). De bouwscripts uit de oorspronkelijke notities (`build/run.sh`, `build/rtfruns.py`, `build/build.py`, `build/stage2.py`, `build/shot.py`) zitten niet in het archief en zijn hier niet toegevoegd. Die scripts lazen alleen de bronnen en schreven naar `build/` en `site/data/`.
+Deze repository bevat alleen de statische preview (`index.html`, `css/`, `js/`, `data/`, `vendor/`). De bouwscripts uit de oorspronkelijke notities (`build/run.sh`, `build/rtfruns.py`, `build/build.py`, `build/stage2.py`, `build/shot.py`) zitten niet in het archief en zijn hier niet toegevoegd. Die scripts lazen alleen de bronnen en schreven naar `build/` en `site/data/`.
