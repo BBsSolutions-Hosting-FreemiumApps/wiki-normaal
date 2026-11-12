@@ -17,6 +17,7 @@ function load(src){
 SBW.gotMeta=function(m){SBW.meta=m;};
 SBW.gotBook=function(i,d){SBW.books[i]=d;};
 SBW.gotEnts=function(d){for(var k in d) SBW.ents[k]=d[k];};
+SBW.gotGeo=function(g){SBW.geo=g;};
 function book(i){return SBW.books[i]?Promise.resolve(SBW.books[i]):load('data/b/'+i+'.js').then(function(){return SBW.books[i];});}
 function ent(id){var m=SBW.meta; if(SBW.ents[id]) return Promise.resolve(SBW.ents[id]); return load('data/e'+(id%m.nch)+'.js').then(function(){return SBW.ents[id];});}
 function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[-'’·ʼ`‘ ]/g,'').toLowerCase();}
@@ -95,6 +96,61 @@ function renderRead(bi,c,focus){
   }).catch(function(e){app.innerHTML='<p>'+esc(e.message)+'</p>';});
 }
 
+/* ---------- ligging (huidige kaart, alleen als data/geo.js het id heeft) ---------- */
+var ligging=null, entGen=0;
+function clearLigging(){
+  if(!ligging) return;
+  var map=ligging.map;
+  ligging=null;
+  map.remove();
+}
+function mountLigging(el, plaats){
+  var b=plaats.bbox, bounds=L.latLngBounds([b[0], b[2]], [b[1], b[3]]);
+  var pad=plaats.speld?[12,12]:[10,10];
+  var map=L.map(el,{scrollWheelZoom:false, attributionControl:true});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap-bijdragers</a>'
+  }).addTo(map);
+  if(plaats.geojson){
+    var lijn=plaats.geojson.type==='LineString'||plaats.geojson.type==='MultiLineString';
+    L.geoJSON(plaats.geojson,{interactive:false, style:lijn
+      ?{color:'#0b5f8a',weight:4,opacity:.92,lineCap:'round',lineJoin:'round'}
+      :(plaats.speld
+        ?{color:'#5a2a6e',weight:2,opacity:.95,fillColor:'#5a2a6e',fillOpacity:.16}
+        :{color:'#1e4d7b',weight:2,opacity:.9,fillColor:'#1e4d7b',fillOpacity:.06})
+    }).addTo(map);
+  }
+  if(plaats.speld===true && typeof plaats.lat==='number' && typeof plaats.lon==='number'){
+    L.Icon.Default.imagePath='vendor/leaflet/images/';
+    L.marker([plaats.lat, plaats.lon],{title:plaats.titel||'', alt:plaats.titel||''}).addTo(map);
+  }
+  var state={map:map, userMoved:false, ready:false, fitting:false};
+  ligging=state;
+  function fit(){
+    if(ligging!==state || !el.isConnected) return;
+    if(el.clientWidth<20 || el.clientHeight<20) return;
+    map.invalidateSize({animate:false, pan:false});
+    if(!state.userMoved){
+      state.fitting=true;
+      map.fitBounds(bounds,{padding:pad, animate:false});
+      state.fitting=false;
+    }
+  }
+  map.on('zoomstart dragstart',function(){ if(state.ready && !state.fitting) state.userMoved=true; });
+  if(window.ResizeObserver){
+    var ro=new ResizeObserver(function(){ fit(); });
+    ro.observe(el.parentNode||el);
+    map.on('unload',function(){ ro.disconnect(); });
+  }
+  window.addEventListener('resize',fit);
+  map.on('unload',function(){ window.removeEventListener('resize',fit); });
+  fit();
+  requestAnimationFrame(function(){ fit(); requestAnimationFrame(fit); });
+  setTimeout(fit,60);
+  setTimeout(fit,280);
+  setTimeout(function(){ if(ligging===state){ fit(); state.ready=true; } },500);
+}
 /* ---------- popup ---------- */
 function factLine(f){
   var kind=f[0],t=f[1],r=f[2];
@@ -105,8 +161,11 @@ function factLine(f){
 }
 function openEnt(id){
   var M=SBW.meta,row=M.ents[id]; if(!row) return;
+  var req=++entGen;
+  clearLigging();
   panel.hidden=false; pbody.innerHTML='<p class="loading">Laden…</p>';
   ent(id).then(function(d){
+    if(req!==entGen) return;
     var T=TYPES[row[1]]||['?','?'],C=CERT[row[2]];
     var h='<h2 class="p-name">'+esc(d.n)+'</h2>';
     var extra=[]; d.f.forEach(function(f){if(f!==d.n) extra.push(f);});
@@ -120,6 +179,14 @@ function openEnt(id){
     var first=d.q.length?d.q[0]:null;
     if(first) who.push('Eerst genoemd in <a href="'+blockHref(first[0])+'">'+esc(M.blk[first[0]][2])+'</a>.');
     h+='<p class="who">'+who.join(' ')+'</p>';
+    var plaats=SBW.geo&&SBW.geo.plaatsen&&SBW.geo.plaatsen[id];
+    if(plaats){
+      h+='<section class="ligging" aria-label="Ligging"><h3>Ligging</h3>';
+      h+='<p class="small">U ziet hier de huidige ligging, geen historische reconstructie.</p>';
+      h+='<div class="ligging-frame"><div id="ligging-map"></div></div>';
+      if(plaats.bijschrift) h+='<p class="map-cap">'+esc(plaats.bijschrift)+'</p>';
+      h+='<p class="small">Bron: OpenStreetMap, via Nominatim (12 november 2026). <a class="osm-credit" href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">© OpenStreetMap-bijdragers</a></p></section>';
+    }
     if(d.kp&&d.kp.length){d.kp.forEach(function(k){ if(!k.info.length) return; h+='<div class="kp"><b>Koningsprofiel uit de studiebijbel</b><br>'+esc(k.h)+'<br>'+k.info.map(esc).join('<br>')+'</div>';});}
     var facts=d.facts.filter(function(f){return f[0]!=='heerser';}),rul=d.facts.filter(function(f){return f[0]==='heerser';});
     if(facts.length){h+='<h3>Wat de tekst over '+(row[1]==='P'?'deze persoon':'deze naam')+' zegt</h3><ul class="facts">'+facts.slice(0,14).map(factLine).join('')+'</ul>';}
@@ -131,18 +198,23 @@ function openEnt(id){
     h+='<div class="refs" id="refs">'+refs.slice(0,40).join('')+(refs.length>40?' <button id="moreRefs">Alle '+refs.length+(d.on>refs.length?' (van '+d.on+')':'')+' tonen</button>':'')+'</div>';
     if(d.nt.length){h+='<h3>Aantekeningen (studynotes)</h3>'+d.nt.map(function(i){var n=M.notes[i],hr=n.r?refHref(n.r):null;return '<div class="note"><span class="small">['+n.n+']'+(n.r?' · '+(hr?'<a href="'+hr+'">'+esc(n.r)+'</a>':esc(n.r)):'')+'</span><br>'+decorate(n.t)+'</div>';}).join('')+(d.ntn>d.nt.length?'<p class="small">Nog '+(d.ntn-d.nt.length)+' aantekening(en) noemen deze naam.</p>':'');}
     h+='<h3>Waarop deze indeling berust</h3><p class="why">'+esc(C[1])+'.<br>'+d.why.map(esc).join('<br>')+(d.lst?'<br>Ook in de naamlijst van deze wiki als '+esc(T[0])+'.':'')+'</p>';
-    h+='<p class="small">Alles hierboven komt letterlijk uit de Elohim YHWH Studiebijbel v9 en de studynotes; er is niets bijgeschreven. <a href="#/e/'+id+'">Vaste link</a></p>';
+    h+='<p class="small">'+(plaats?'De verzen, feiten en aantekeningen komen letterlijk uit de Elohim YHWH Studiebijbel v9 en de studynotes; er is niets bijgeschreven. De kaart hoort daar niet bij.':'Alles hierboven komt letterlijk uit de Elohim YHWH Studiebijbel v9 en de studynotes; er is niets bijgeschreven.')+' <a href="#/e/'+id+'">Vaste link</a></p>';
     pbody.innerHTML=h; pbody.scrollTop=0;
+    var slot=document.getElementById('ligging-map');
+    if(slot){
+      if(window.L){ try{ mountLigging(slot, plaats); }catch(err){ if(slot.parentNode) slot.parentNode.remove(); } }
+      else if(slot.parentNode) slot.parentNode.remove();
+    }
     var mr=document.getElementById('moreRefs'); if(mr) mr.onclick=function(){document.getElementById('refs').innerHTML=refs.join('');};
   });
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
-document.getElementById('panelClose').onclick=function(){panel.hidden=true;};
-document.addEventListener('keydown',function(e){if(e.key==='Escape') panel.hidden=true; if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ent')){e.preventDefault();openEnt(+e.target.dataset.e);}});
+document.getElementById('panelClose').onclick=function(){clearLigging(); panel.hidden=true;};
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){clearLigging(); panel.hidden=true;} if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ent')){e.preventDefault();openEnt(+e.target.dataset.e);}});
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-e]'); if(t){e.preventDefault(); openEnt(+t.dataset.e); return;}
   var c=e.target.closest('.code'); if(c){showTip(c); return;}
-  var a=e.target.closest('a'); if(a&&a.getAttribute('href')&&a.getAttribute('href').indexOf('#/lees')===0&&window.innerWidth<720) panel.hidden=true;
+  var a=e.target.closest('a'); if(a&&a.getAttribute('href')&&a.getAttribute('href').indexOf('#/lees')===0&&window.innerWidth<720){clearLigging(); panel.hidden=true;}
 });
 function showTip(el){var r=el.getBoundingClientRect(); tip.textContent=el.dataset.tip; tip.hidden=false; tip.style.left=Math.min(r.left,window.innerWidth-260)+'px'; tip.style.top=(r.bottom+6)+'px'; clearTimeout(showTip.t); showTip.t=setTimeout(function(){tip.hidden=true;},2600);}
 document.addEventListener('mouseover',function(e){var c=e.target.closest&&e.target.closest('.code'); if(c) showTip(c);});
@@ -178,7 +250,8 @@ function renderOver(){
   app.innerHTML='<section class="page"><h1>Over deze wiki</h1>'+
   '<p class="notice">Dit is een voorbeeld (preview). Het staat niet online en is nog niet gecontroleerd door de redactie.</p>'+
   '<p>Deze wiki is gemaakt uit de Elohim YHWH Studiebijbel 2026 (v9) van Jan Smit, de bijbehorende studynotes en de officiële legenda. U leest de tekst per boek en hoofdstuk; namen van personen, volken, steden, landen, rivieren, meren, zeeën en regio’s zijn aan te tikken.</p>'+
-  '<h2>Wat staat er in een popup?</h2><ol><li>Wie of wat het is, en waarop dat berust (legendakleur, zinnen in de tekst of een naamlijst).</li><li>Wat de tekst zelf zegt: “zoon van”, “koning van”, “verwekte”, generatiemarkeringen en de koningsprofielen uit de studiebijbel.</li><li>De belangrijkste verzen, letterlijk geciteerd, met een link.</li><li>Alle plaatsen waar de naam voorkomt en de aantekeningen die de naam noemen.</li></ol>'+
+  '<h2>Wat staat er in een popup?</h2><ol><li>Wie of wat het is, en waarop dat berust (legendakleur, zinnen in de tekst of een naamlijst).</li><li>Bij Jeruzalem, Egypte en de rivier de Jordaan: een kaart met de huidige ligging.</li><li>Wat de tekst zelf zegt: “zoon van”, “koning van”, “verwekte”, generatiemarkeringen en de koningsprofielen uit de studiebijbel.</li><li>De belangrijkste verzen, letterlijk geciteerd, met een link.</li><li>Alle plaatsen waar de naam voorkomt en de aantekeningen die de naam noemen.</li></ol>'+
+  '<p>De kaart toont de huidige ligging uit OpenStreetMap (Nominatim, 12 november 2026), geen historische reconstructie. Bij Egypte ziet u de moderne landsgrens, geen bijbelse grens. Foto’s zijn nog niet opgenomen. Andere namen hebben geen kaart.</p>'+
   '<p>Er worden geen levensverhalen bijgeschreven. Staat er in de tekst niets over de rol of het doel van iemand, dan blijft de popup kort en verwijst naar de verzen.</p>'+
   '<h2>Tellingen</h2><table class="stat"><tr><td><b>Soort</b></td><td><b>Aantal</b></td><td><b>zeker / waarschijnlijk / onzeker</b></td></tr>'+rows+'<tr><td><b>Totaal</b></td><td><b>'+S.entiteiten+'</b></td><td></td></tr></table>'+
   '<p class="small">Tekstblokken (verzen of versgroepen): '+S.blokken+'. Aantekeningen: '+SBW.meta.notes.length+'.</p>'+
@@ -190,12 +263,15 @@ function renderLegenda(){app.innerHTML=''; app.appendChild(document.getElementBy
 function route(){
   var h=location.hash.replace(/^#\/?/,''),p=h.split('/');
   document.querySelectorAll('nav a').forEach(function(a){a.classList.toggle('on',a.dataset.nav===(p[0]==='e'?'wiki':(p[0]||'lees')));});
-  tip.hidden=true; if(p[0]!=='e') panel.hidden=true;
+  tip.hidden=true; if(p[0]!=='e'){clearLigging(); panel.hidden=true;}
   if(p[0]==='wiki') renderWiki(p[1]);
   else if(p[0]==='e'){ if(!app.querySelector('#list')) renderWiki(SBW.meta.ents[+p[1]]?SBW.meta.ents[+p[1]][1]:'P'); openEnt(+p[1]); }
   else if(p[0]==='legenda') renderLegenda();
   else if(p[0]==='over') renderOver();
   else renderRead(p[1]!==undefined?+p[1]:undefined,p[2]?+p[2]:undefined,p[3]!==undefined?+p[3]:undefined);
 }
-load('data/meta.js').then(function(){window.addEventListener('hashchange',route); route();}).catch(function(e){app.innerHTML='<p>'+esc(e.message)+'</p>';});
+Promise.all([
+  load('data/meta.js'),
+  load('data/geo.js').catch(function(){SBW.geo={plaatsen:{}};})
+]).then(function(){window.addEventListener('hashchange',route); route();}).catch(function(e){app.innerHTML='<p>'+esc(e.message)+'</p>';});
 })();
