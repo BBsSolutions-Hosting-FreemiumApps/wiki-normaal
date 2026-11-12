@@ -83,5 +83,16 @@ table.codes td:first-child{width:28%;font-family:monospace}
 .how li{margin:.35rem 0}
 .stat td{padding:.2rem .8rem .2rem 0}
 .notice{background:#fff3e0;border:1px solid #f0d2a8;padding:.5rem .8rem;border-radius:8px;font-size:.92rem}
+.qual{font-style:italic;color:var(--muted);font-weight:400}
+.same{background:#f6f1e6;border:1px solid var(--line);border-radius:8px;padding:.45rem .75rem;margin:.15rem 0 .8rem;font-size:.95rem}
+.same p{margin:.28rem 0}
+.same a{display:inline-block;margin:.12rem .75rem .12rem 0}
+.tijd h3,.beelden h3{margin:.35rem 0 .15rem}
+.tl{margin:.15rem 0 .8rem;padding-left:1.1rem}
+.fig{margin:.4rem 0 .75rem}
+.fig img{display:block;width:100%;max-height:16rem;object-fit:contain;background:#e7e2d6;border:1px solid var(--line);border-radius:8px}
+.fig.kaart img{max-height:18rem}
+.fig figcaption{font-size:.8rem;color:var(--muted);margin-top:.35rem}
+a.rel{text-decoration:underline dotted}
 [hidden]{display:none!important}
 @media (min-width:721px){.panel{top:3.05rem}}
