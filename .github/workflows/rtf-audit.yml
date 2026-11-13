@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout testbranch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install unrtf
         run: sudo apt-get update -qq && sudo apt-get install -y unrtf
       - name: Compare full source against wiki data
@@ -45,7 +45,7 @@ jobs:
           fi
       - name: Downloadable JSON report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: studiebijbel-rtf-vergelijking
           path: tests/rtf-versievergelijking.json
