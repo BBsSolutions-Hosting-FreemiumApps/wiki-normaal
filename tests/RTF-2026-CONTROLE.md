@@ -1,35 +1,36 @@
-# Studiebijbel 2026 – controle 13 november 2026
+# Studiebijbel 2026 — RTF-vervanging (13 november 2026)
 
-## Status
-Dit is een **technische nulmeting** in de testbranch, **geen** voltooide RTF-vervanging. De oorspronkelijke 66 JS-boekbestanden zijn bij deze controle niet overschreven. Er is niets samengevoegd naar `main`.
-
-## Nieuwe RTF-bron
-- Bestandsnaam: `Ai-Elohim-YHWH-Studiebijbel-2026.rtf`.
+## Bevestiging bronbestand
+- Bestand in GitHub testbranch: `Ai-Elohim-YHWH-Studiebijbel-2026 (3).rtf`.
 - Grootte: **14.092.423 bytes**.
 - SHA-256: `4cf082bd418517b301240735b4ede690b09f2372e13ca5c1e4aac59b48935392`.
-- De volledige RTF kon worden gelezen en als HTML met oorspronkelijke RTF-opmaak worden geëxporteerd.
-- Alle **66 Bijbelboeken** zijn in de aangeleverde bron herkend.
-- De automatisch gelezen bron bevat 20.074 mogelijke verseverwijzingregels; daarvan zijn er ook verwijzingen binnen commentaren en gecombineerde passages. Dit aantal is niet hetzelfde als het aantal websiteblokken.
+- Git blob: `138e7a8eb94637ac6a9a84f72d1070bc64a6c34a`.
+- Dit blob-ID is identiek aan dat van de eerder ingelezen RTF. Bestand is volledig en leesbaar.
 
-## Bestaande websitegegevens, daadwerkelijk gecontroleerd
-- **66/66** `data/b/0.js` t/m `data/b/65.js` leesbaar en JSON-parsebaar.
-- **17.402** bestaande tekstblokken.
-- **52.740** klikbare naamsegmenten.
-- **0** gevonden verwijzingen naar ongeldige stijl-ID's (stijlentabel: 819).
-- **0** gevonden verwijzingen naar naam-ID's buiten bereik.
-- **24/24** entiteitenbestanden `data/e0.js` t/m `data/e23.js` leesbaar.
-- **2.808** wiki-records aanwezig; de record-ID's staan in de juiste bestanden.
+## Structuurcontrole bestaande website
+- **66** Bijbelboeken, **17.402** tekstblokken, **52.740** aanklikbare naamsegmenten en **2.808** wiki-records.
+- Geen ongeldige kleurstijl-ID's of naam-ID's gevonden in de bestaande gegevens.
+- Live-website (`main`) is bij deze controle niet gewijzigd.
 
-## Genesis 2
-- **18** bestaande tekstblokken en **13** aangeklikbare naamsegmenten.
-- **5 van 5** gecontroleerde Bijbeltekstpassages komen in de bestaande GitHub-data overeen met de nieuwe RTF-tekst.
-- **Eden** (naam-ID 1): type **plaats**, zekerheid **zeker**.
-- De 13 segmenten en bijbehorende echte records zijn via de regressiepagina te onderzoeken: `tests/genesis2-rtf-regressie.html`.
-- **Reviewpunt:** de entiteit `Chawila I` (naam-ID 3) staat als persoon, terwijl Genesis 2:11 spreekt over het **land** Chawila I. Dit is een contextafhankelijke classificatie die niet automatisch gewijzigd is.
+## Geautomatiseerde RTF-vergelijking
+GitHub Actions workflow: [RTF-vergelijking](https://github.com/BBsSolutions-Hosting-FreemiumApps/wiki-normaal/actions/workflows/rtf-audit.yml).
 
-## Nog niet afgerond
-1. Volledige vers-voor-vers en kleur-voor-kleur vergelijking van de 66 boekbestanden met de nieuwe RTF.
-2. Het betrouwbaar overzetten van gewijzigde tekst met behoud van alle reeds gekoppelde namen en wiki-ID's.
-3. Eindcontrole na conversie en pas daarna een eventuele merge naar `main`.
+**Eerste extractie (`unrtf`):**
+- 17.385 verzenblokken gekoppeld aan de RTF.
+- 13.343 exact overeenkomend.
+- 4.042 verschilpunten en 17 nog niet gekoppelde blokken.
+- Automatisch ZIP-artifact beschikbaar met de 66-boeken-vergelijking.
 
-**Belangrijk:** nul ongeldige ID's in de bestaande versie bewijst nog niet dat de nieuwe versie in zijn geheel correct is geïmporteerd. De RTF is niet als nieuw bronbestand in deze GitHub-branch opgeslagen.
+**Nauwkeuriger vergelijking met LibreOffice-HTML (controle buiten GitHub):**
+- 17.383 van 17.402 blokken gekoppeld.
+- **15.185 tekstblokken letterlijk gelijk.**
+- **2.198** blokken nog niet letterlijk gelijk.
+- Daarvan is bij **1.314** de RTF-tekst langer dan de huidige tekst, vaak doordat een volgende kanttekening of kop aan het vers wordt gehangen (**1.301** hebben herkenbaar zo'n commentaarstart).
+- Bij **395** blokken is juist de huidige webtekst langer, onder meer doordat de website meerdere bijbelverzen in één blok samenvoegt.
+- **489** verschillen zijn intern en verdienen tekstinhoudelijke beoordeling.
+- **19** blokken zijn door deze methode nog niet veilig gekoppeld.
+
+## Technische conclusie
+De RTF is correct geüpload, maar kan **niet veilig blind over de huidige gegevensbestanden worden geschreven**. De bestaande website combineert meerdere verzen, aparte commentaren, gekleurde tekstdelen en persistent toegewezen wiki-ID's. Gewone tekstextractie verliest of verplaatst die informatie.
+
+De eerstvolgende technische stap is een converter te valideren die **per bestaande blok-ID** de RTF-opmaak opnieuw inleest, de exacte oorspronkelijke link-ID's behoudt en alle niet automatisch passende blokken expliciet markeert. Deze stap is nog **niet afgerond**. `main` blijft ongewijzigd.
