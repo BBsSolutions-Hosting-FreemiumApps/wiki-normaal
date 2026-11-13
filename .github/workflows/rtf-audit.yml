@@ -1,0 +1,52 @@
+name: Studiebijbel 2026 - RTF vergelijking (testbranch)
+on:
+  push:
+    branches:
+      - update-studiebijbel-2026-11-13
+    paths:
+      - 'Ai-Elohim-YHWH-Studiebijbel-2026*.rtf'
+      - 'tools/audit_versies.py'
+      - '.github/workflows/rtf-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare-rtf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout testbranch
+        uses: actions/checkout@v4
+      - name: Install unrtf
+        run: sudo apt-get update -qq && sudo apt-get install -y unrtf
+      - name: Compare full source against wiki data
+        run: python3 tools/audit_versies.py "Ai-Elohim-YHWH-Studiebijbel-2026 (3).rtf" tests/rtf-versievergelijking.json
+      - name: Summarize result
+        if: always()
+        run: |
+          if [ -f tests/rtf-versievergelijking.json ]; then
+            python3 - <<'PY'
+          import json,os
+          p=json.load(open('tests/rtf-versievergelijking.json'))
+          c=p['counts']
+          msg=("### Studiebijbel RTF-vergelijking\n"
+               f"- Boeken: {p['bible_books']}\n"
+               f"- Bestaande tekstblokken: {p['existing_blocks']}\n"
+               f"- Herkende RTF-headers: {p['source_headers']}\n"
+               f"- Gekoppeld: {c.get('aligned_headers',0)}\n"
+               f"- Letterlijk identiek: {c.get('exact_text_matches',0)}\n"
+               f"- Afwijkend: {c.get('text_mismatches',0)}\n"
+               f"- Nog niet gekoppeld: {c.get('unmatched_headers',0)}\n"
+               "- Alleen rapport; niets automatisch gepubliceerd.\n")
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as out:out.write(msg)
+          PY
+          fi
+      - name: Downloadable JSON report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studiebijbel-rtf-vergelijking
+          path: tests/rtf-versievergelijking.json
+          if-no-files-found: warn
