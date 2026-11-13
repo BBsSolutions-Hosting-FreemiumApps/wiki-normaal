@@ -43,6 +43,13 @@ jobs:
           with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as out:out.write(msg)
           PY
           fi
+      - name: Pack existing Wiki data for local verification
+        run: tar -czf wiki-data-snapshot.tar.gz data
+      - name: Downloadable Wiki data snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: wiki-data-snapshot
+          path: wiki-data-snapshot.tar.gz
       - name: Downloadable JSON report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
