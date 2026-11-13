@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Genesis 2 – RTF- en wikicontrole</title>
+<style>
+body{font:16px/1.6 system-ui,sans-serif;background:#f7f6f1;color:#24352b;margin:0;padding:22px}
+main{max-width:900px;margin:auto}.card{padding:16px 22px;background:white;margin:12px 0;border:1px solid #d4dace;border-radius:8px}
+.refs{font-size:13px;color:#576a61;margin-bottom:12px}.passage{margin:0 0 5px 0}
+.entity{border-bottom:1px dotted #25764f;cursor:pointer;border-radius:2px}
+.entity:focus{outline:2px solid #22754e}.status{font-weight:650}.fail{color:#a02320}.ok{color:#166c43}
+#details{background:#ecf4ed;padding:16px;position:sticky;bottom:0;border:2px solid #709d7c;max-height:32vh;overflow:auto}
+.small{font-size:13px;color:#54645d}.bar{display:flex;gap:8px;align-items:center;justify-content:space-between}
+button{padding:6px 12px;background:#fff;border:1px solid #8b9f8e;border-radius:4px;cursor:pointer}
+</style></head><body><main>
+<h1>Genesis 2 · echte gegevenscontrole</h1>
+<p>Deze test laadt rechtstreeks de echte bestanden <code>data/meta.js</code>, <code>data/b/0.js</code> en bij een klik de bijbehorende wiki-entiteit. Geen nagemaakte namen of pop-ups.</p>
+<p id="status" class="status">Gegevens laden…</p>
+<div class="bar"><h2>Nieuwe RTF tegenover huidige GitHub-tekst</h2><label><input id="colors" type="checkbox" checked> Kleuren aan</label></div>
+<p class="small">De gecontroleerde citaten komen uit de aangeleverde RTF. Deze proef controleert daarnaast het aantal echte naamkoppelingen, het soort Eden en de klikwerking. Een volledige vers-voor-versvergelijking van de 66 boeken gebeurt apart.</p>
+<div id="checks" class="card"></div><section id="blocks"></section>
+<div id="details" hidden><button style="float:right" id="close" aria-label="Sluiten">Sluiten</button><h3 id="who"></h3><p id="what"></p><p id="why"></p></div>
+</main>
+<script>
+const SBW=window.SBW={meta:null,books:{},ents:{},gotMeta(x){this.meta=x},gotBook(id,x){this.books[id]=x},gotEnts(x){Object.assign(this.ents,x)}};
+function load(path){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=path;s.onload=resolve;s.onerror=()=>reject(Error('Kan '+path+' niet laden'));document.head.append(s)})}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function pop(id){try{if(!SBW.ents[id])await load('../data/e'+(id%SBW.meta.nch)+'.js');const e=SBW.ents[id];if(!e)throw Error('Geen gegevens voor naam-ID '+id);document.querySelector('#who').textContent=e.n+' · '+e.t+' · '+e.c;document.querySelector('#what').textContent=(e.role||[]).join(' / ')||'Geen aanvullende rol in het record';document.querySelector('#why').textContent=e.ov||'';document.querySelector('#details').hidden=false}catch(err){document.querySelector('#status').textContent=err.message;document.querySelector('#status').className='status fail'}}
+document.querySelector('#close').onclick=()=>document.querySelector('#details').hidden=true;
+const quotes={'Genesis 2:1':'Alzo werden voltooid de hemel en de aarde en al hun heer','Genesis 2:10':'Er ontsprong in Eden een rivier {128x} om de hof te bevochtigen en daar splitste zij zich in vier stromen','Genesis 2:13':'De naam van de tweede rivier is Gichon deze stroomt om het gehele land Ethiopie','Genesis 2:14':'De naam van de derde rivier is Tigris deze stroomt ten oosten van Assur De vierde rivier is de Eufraat','Genesis 2:15':'YHWH Elohim nam de mens en plaatste hem in de hof van Eden {5x} om die te bewerken en te bewaren'};
+function normalize(x){return x.replace(/\s+/g,' ').trim().normalize('NFC')}
+function render(){
+ const b=SBW.books[0],m=SBW.meta,ch=b.ch['2'],target=document.querySelector('#blocks');let links=0,errors=[],matches=0;
+ for(const id of ch){const block=b.bl[id],card=document.createElement('article');card.className='card';const title=document.createElement('div');title.className='refs';title.textContent=block.l+' '+(block.m||'');card.append(title);
+ const flat=block.x.map(row=>Array.isArray(row)?row.map(x=>x[0]).join(''):'').join(' ');
+ if(quotes[block.l]){if(normalize(flat).includes(normalize(quotes[block.l])))matches++;else errors.push('RTF-tekst wijkt af: '+block.l)}
+ if(block.h){const h=document.createElement('h3');h.textContent=block.h;card.append(h)}
+ for(const row of block.x){const p=document.createElement('div');p.className='passage';if(!Array.isArray(row)){p.innerHTML='&nbsp;';card.append(p);continue}
+ for(const seg of row){const span=document.createElement('span');span.textContent=seg[0];span.dataset.sty=m.sty[seg[1]]||'';span.style.cssText=span.dataset.sty;
+ if(seg.length>=3){links++;span.className='entity';span.tabIndex=0;span.setAttribute('role','button');span.title='Open naam-ID '+seg[2];span.onclick=()=>pop(seg[2]);span.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pop(seg[2])}}}
+ p.append(span)}card.append(p)}target.append(card)}
+ document.querySelector('#colors').onchange=event=>document.querySelectorAll('[data-sty]').forEach(span=>span.style.cssText=event.target.checked?span.dataset.sty:'');
+ const tests=[['Genesis 2 heeft 18 tekstblokken',ch.length===18],['13 originele naamkoppelingen aangetroffen',links===13],['5 gecontroleerde RTF-citaten stemmen overeen',matches===5],['Alle verwijzingen zijn echte ID-koppelingen',links===13]];
+ document.querySelector('#checks').innerHTML=tests.map(([label,ok])=>'<div class="'+(ok?'ok':'fail')+'">'+(ok?'✓':'✗')+' '+esc(label)+'</div>').join('')+(errors.length?'<p class="fail">'+esc(errors.join('; '))+'</p>':'');
+ const failed=tests.filter(x=>!x[1]).length;const status=document.querySelector('#status');status.textContent=failed?'Controlepunten niet geslaagd: '+failed:'RTF-steekproef en verwijzingsstructuur geslaagd. Klik op een naam om de echte wiki-pop-up te controleren.';status.className='status '+(failed?'fail':'ok')
+}
+Promise.all([load('../data/meta.js'),load('../data/b/0.js')]).then(render).catch(e=>{document.querySelector('#status').textContent=e.message;document.querySelector('#status').className='status fail'});
+</script></body></html>
