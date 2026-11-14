@@ -1,0 +1,751 @@
+{
+  "base_url": "http://127.0.0.1:8767/full-final/",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Genesis 2: 18 echte tekstblokken en 13 oorspronkelijke naamsegmenten",
+      "passed": true,
+      "duration_ms": 2682,
+      "detail": {
+        "blocks": 18,
+        "linked_segments": 13
+      }
+    },
+    {
+      "name": "Genesis 2: alle tekstregels en CSS-kleuren/opmaak worden werkelijk gerenderd",
+      "passed": true,
+      "duration_ms": 104,
+      "detail": {
+        "rows": 151,
+        "segments": 450,
+        "errors": []
+      }
+    },
+    {
+      "name": "Genesis 2: alle 13 namen openen het juiste echte wikirecord",
+      "passed": true,
+      "duration_ms": 5423,
+      "detail": {
+        "opened": 13,
+        "eden": "plaats / zeker",
+        "chawila": "Chawila I / persoon / waarschijnlijk"
+      }
+    },
+    {
+      "name": "Naamkoppeling werkt ook met toetsenbord en Escape",
+      "passed": true,
+      "duration_ms": 152
+    },
+    {
+      "name": "Kleuren uitschakelen en herstellen verandert de tekst en links niet",
+      "passed": true,
+      "duration_ms": 1701,
+      "detail": {
+        "distinct_source_colors": 8
+      }
+    },
+    {
+      "name": "Hoofdstukkeuze en vorige/volgende hoofdstuk werken",
+      "passed": true,
+      "duration_ms": 447
+    },
+    {
+      "name": "Alle 66 boeken laden tekst en geldige naamkoppelingen",
+      "passed": true,
+      "duration_ms": 10146,
+      "detail": [
+        {
+          "name": "Genesis",
+          "chapter": 1,
+          "expected_blocks": 28,
+          "actual_blocks": 28,
+          "text": 4414,
+          "broken_links": 0
+        },
+        {
+          "name": "Exodus",
+          "chapter": 1,
+          "expected_blocks": 19,
+          "actual_blocks": 19,
+          "text": 3201,
+          "broken_links": 0
+        },
+        {
+          "name": "Leviticus",
+          "chapter": 1,
+          "expected_blocks": 5,
+          "actual_blocks": 5,
+          "text": 3022,
+          "broken_links": 0
+        },
+        {
+          "name": "Numeri",
+          "chapter": 1,
+          "expected_blocks": 20,
+          "actual_blocks": 20,
+          "text": 7311,
+          "broken_links": 0
+        },
+        {
+          "name": "Deuteronomium",
+          "chapter": 1,
+          "expected_blocks": 10,
+          "actual_blocks": 10,
+          "text": 10535,
+          "broken_links": 0
+        },
+        {
+          "name": "Jozua",
+          "chapter": 1,
+          "expected_blocks": 12,
+          "actual_blocks": 12,
+          "text": 2937,
+          "broken_links": 0
+        },
+        {
+          "name": "Richteren",
+          "chapter": 1,
+          "expected_blocks": 35,
+          "actual_blocks": 35,
+          "text": 7362,
+          "broken_links": 0
+        },
+        {
+          "name": "Ruth",
+          "chapter": 1,
+          "expected_blocks": 16,
+          "actual_blocks": 16,
+          "text": 3809,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Samu-el",
+          "chapter": 1,
+          "expected_blocks": 21,
+          "actual_blocks": 21,
+          "text": 4374,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Samu-el",
+          "chapter": 1,
+          "expected_blocks": 6,
+          "actual_blocks": 6,
+          "text": 4407,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Koningen",
+          "chapter": 1,
+          "expected_blocks": 20,
+          "actual_blocks": 20,
+          "text": 9709,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Koningen",
+          "chapter": 1,
+          "expected_blocks": 17,
+          "actual_blocks": 17,
+          "text": 3850,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Kronieken",
+          "chapter": 1,
+          "expected_blocks": 46,
+          "actual_blocks": 46,
+          "text": 6915,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Kronieken",
+          "chapter": 1,
+          "expected_blocks": 13,
+          "actual_blocks": 13,
+          "text": 3485,
+          "broken_links": 0
+        },
+        {
+          "name": "Ezra",
+          "chapter": 1,
+          "expected_blocks": 3,
+          "actual_blocks": 3,
+          "text": 2632,
+          "broken_links": 0
+        },
+        {
+          "name": "Nehemia",
+          "chapter": 1,
+          "expected_blocks": 5,
+          "actual_blocks": 5,
+          "text": 2192,
+          "broken_links": 0
+        },
+        {
+          "name": "Esther",
+          "chapter": 1,
+          "expected_blocks": 7,
+          "actual_blocks": 7,
+          "text": 4363,
+          "broken_links": 0
+        },
+        {
+          "name": "Job",
+          "chapter": 1,
+          "expected_blocks": 11,
+          "actual_blocks": 11,
+          "text": 6235,
+          "broken_links": 0
+        },
+        {
+          "name": "Psalm",
+          "chapter": 96,
+          "expected_blocks": 13,
+          "actual_blocks": 13,
+          "text": 2068,
+          "broken_links": 0
+        },
+        {
+          "name": "Spreuken",
+          "chapter": 1,
+          "expected_blocks": 16,
+          "actual_blocks": 16,
+          "text": 3381,
+          "broken_links": 0
+        },
+        {
+          "name": "Prediker",
+          "chapter": 1,
+          "expected_blocks": 16,
+          "actual_blocks": 16,
+          "text": 2288,
+          "broken_links": 0
+        },
+        {
+          "name": "Hooglied",
+          "chapter": 1,
+          "expected_blocks": 17,
+          "actual_blocks": 17,
+          "text": 1816,
+          "broken_links": 0
+        },
+        {
+          "name": "Jesaja",
+          "chapter": 1,
+          "expected_blocks": 6,
+          "actual_blocks": 6,
+          "text": 4870,
+          "broken_links": 0
+        },
+        {
+          "name": "Jeremia",
+          "chapter": 1,
+          "expected_blocks": 8,
+          "actual_blocks": 8,
+          "text": 3370,
+          "broken_links": 0
+        },
+        {
+          "name": "Klaagliederen",
+          "chapter": 1,
+          "expected_blocks": 21,
+          "actual_blocks": 21,
+          "text": 5793,
+          "broken_links": 0
+        },
+        {
+          "name": "Ezechi-el",
+          "chapter": 1,
+          "expected_blocks": 6,
+          "actual_blocks": 6,
+          "text": 4601,
+          "broken_links": 0
+        },
+        {
+          "name": "Dani-el",
+          "chapter": 1,
+          "expected_blocks": 17,
+          "actual_blocks": 17,
+          "text": 6267,
+          "broken_links": 0
+        },
+        {
+          "name": "Hosea",
+          "chapter": 1,
+          "expected_blocks": 7,
+          "actual_blocks": 7,
+          "text": 5381,
+          "broken_links": 0
+        },
+        {
+          "name": "Jo-el",
+          "chapter": 1,
+          "expected_blocks": 13,
+          "actual_blocks": 13,
+          "text": 2973,
+          "broken_links": 0
+        },
+        {
+          "name": "Amos",
+          "chapter": 1,
+          "expected_blocks": 9,
+          "actual_blocks": 9,
+          "text": 2437,
+          "broken_links": 0
+        },
+        {
+          "name": "Obadja",
+          "chapter": 1,
+          "expected_blocks": 9,
+          "actual_blocks": 9,
+          "text": 3940,
+          "broken_links": 0
+        },
+        {
+          "name": "Jona",
+          "chapter": 1,
+          "expected_blocks": 14,
+          "actual_blocks": 14,
+          "text": 3005,
+          "broken_links": 0
+        },
+        {
+          "name": "Micha",
+          "chapter": 1,
+          "expected_blocks": 11,
+          "actual_blocks": 11,
+          "text": 3522,
+          "broken_links": 0
+        },
+        {
+          "name": "Nahum",
+          "chapter": 1,
+          "expected_blocks": 14,
+          "actual_blocks": 14,
+          "text": 3130,
+          "broken_links": 0
+        },
+        {
+          "name": "Habakuk",
+          "chapter": 1,
+          "expected_blocks": 12,
+          "actual_blocks": 12,
+          "text": 2633,
+          "broken_links": 0
+        },
+        {
+          "name": "Sefanja",
+          "chapter": 1,
+          "expected_blocks": 16,
+          "actual_blocks": 16,
+          "text": 3552,
+          "broken_links": 0
+        },
+        {
+          "name": "Haggaï",
+          "chapter": 1,
+          "expected_blocks": 10,
+          "actual_blocks": 10,
+          "text": 3170,
+          "broken_links": 0
+        },
+        {
+          "name": "Zacharia",
+          "chapter": 1,
+          "expected_blocks": 16,
+          "actual_blocks": 16,
+          "text": 3638,
+          "broken_links": 0
+        },
+        {
+          "name": "Maleachi",
+          "chapter": 1,
+          "expected_blocks": 13,
+          "actual_blocks": 13,
+          "text": 2857,
+          "broken_links": 0
+        },
+        {
+          "name": "Mattheus",
+          "chapter": 1,
+          "expected_blocks": 28,
+          "actual_blocks": 28,
+          "text": 11622,
+          "broken_links": 0
+        },
+        {
+          "name": "Markus",
+          "chapter": 1,
+          "expected_blocks": 44,
+          "actual_blocks": 44,
+          "text": 9899,
+          "broken_links": 0
+        },
+        {
+          "name": "Lukas",
+          "chapter": 1,
+          "expected_blocks": 26,
+          "actual_blocks": 26,
+          "text": 10366,
+          "broken_links": 0
+        },
+        {
+          "name": "Johannes",
+          "chapter": 1,
+          "expected_blocks": 42,
+          "actual_blocks": 42,
+          "text": 9363,
+          "broken_links": 0
+        },
+        {
+          "name": "Handelingen",
+          "chapter": 1,
+          "expected_blocks": 14,
+          "actual_blocks": 14,
+          "text": 5666,
+          "broken_links": 0
+        },
+        {
+          "name": "Romeinen",
+          "chapter": 1,
+          "expected_blocks": 19,
+          "actual_blocks": 19,
+          "text": 4703,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Korinthie-ers",
+          "chapter": 1,
+          "expected_blocks": 17,
+          "actual_blocks": 17,
+          "text": 4741,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Korinthie-ers",
+          "chapter": 1,
+          "expected_blocks": 18,
+          "actual_blocks": 18,
+          "text": 3683,
+          "broken_links": 0
+        },
+        {
+          "name": "Galaten",
+          "chapter": 1,
+          "expected_blocks": 7,
+          "actual_blocks": 7,
+          "text": 3321,
+          "broken_links": 0
+        },
+        {
+          "name": "Efezie-ers",
+          "chapter": 1,
+          "expected_blocks": 8,
+          "actual_blocks": 8,
+          "text": 3119,
+          "broken_links": 0
+        },
+        {
+          "name": "Filippie-ers",
+          "chapter": 1,
+          "expected_blocks": 20,
+          "actual_blocks": 20,
+          "text": 4135,
+          "broken_links": 0
+        },
+        {
+          "name": "Kolossers",
+          "chapter": 1,
+          "expected_blocks": 13,
+          "actual_blocks": 13,
+          "text": 4056,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Thessalonikers",
+          "chapter": 1,
+          "expected_blocks": 6,
+          "actual_blocks": 6,
+          "text": 1608,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Thessalonikers",
+          "chapter": 1,
+          "expected_blocks": 4,
+          "actual_blocks": 4,
+          "text": 2081,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Timotheus",
+          "chapter": 1,
+          "expected_blocks": 11,
+          "actual_blocks": 11,
+          "text": 2956,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Timotheus",
+          "chapter": 1,
+          "expected_blocks": 12,
+          "actual_blocks": 12,
+          "text": 2655,
+          "broken_links": 0
+        },
+        {
+          "name": "Titus",
+          "chapter": 1,
+          "expected_blocks": 9,
+          "actual_blocks": 9,
+          "text": 2368,
+          "broken_links": 0
+        },
+        {
+          "name": "Filémon",
+          "chapter": 1,
+          "expected_blocks": 15,
+          "actual_blocks": 15,
+          "text": 2725,
+          "broken_links": 0
+        },
+        {
+          "name": "Hebree-en",
+          "chapter": 1,
+          "expected_blocks": 8,
+          "actual_blocks": 8,
+          "text": 2939,
+          "broken_links": 0
+        },
+        {
+          "name": "Jakobus",
+          "chapter": 1,
+          "expected_blocks": 19,
+          "actual_blocks": 19,
+          "text": 3459,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Petrus",
+          "chapter": 1,
+          "expected_blocks": 12,
+          "actual_blocks": 12,
+          "text": 3997,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Petrus",
+          "chapter": 1,
+          "expected_blocks": 15,
+          "actual_blocks": 15,
+          "text": 3338,
+          "broken_links": 0
+        },
+        {
+          "name": "1 Johannes",
+          "chapter": 1,
+          "expected_blocks": 7,
+          "actual_blocks": 7,
+          "text": 1514,
+          "broken_links": 0
+        },
+        {
+          "name": "2 Johannes",
+          "chapter": 1,
+          "expected_blocks": 11,
+          "actual_blocks": 11,
+          "text": 1766,
+          "broken_links": 0
+        },
+        {
+          "name": "3 Johannes",
+          "chapter": 1,
+          "expected_blocks": 6,
+          "actual_blocks": 6,
+          "text": 1926,
+          "broken_links": 0
+        },
+        {
+          "name": "Judas",
+          "chapter": 1,
+          "expected_blocks": 17,
+          "actual_blocks": 17,
+          "text": 5118,
+          "broken_links": 0
+        },
+        {
+          "name": "Openbaring",
+          "chapter": 1,
+          "expected_blocks": 11,
+          "actual_blocks": 11,
+          "text": 3318,
+          "broken_links": 0
+        }
+      ]
+    },
+    {
+      "name": "Alle 18 aangevulde Deuteronomium-hoofdstukken hebben eigen leesroutes",
+      "passed": true,
+      "duration_ms": 1210,
+      "detail": [
+        {
+          "chapter": 6,
+          "expected": 7,
+          "rendered": 7,
+          "own_metadata": true,
+          "text": 3864
+        },
+        {
+          "chapter": 7,
+          "expected": 22,
+          "rendered": 22,
+          "own_metadata": true,
+          "text": 4690
+        },
+        {
+          "chapter": 8,
+          "expected": 15,
+          "rendered": 15,
+          "own_metadata": true,
+          "text": 3308
+        },
+        {
+          "chapter": 12,
+          "expected": 26,
+          "rendered": 26,
+          "own_metadata": true,
+          "text": 5983
+        },
+        {
+          "chapter": 13,
+          "expected": 9,
+          "rendered": 9,
+          "own_metadata": true,
+          "text": 3246
+        },
+        {
+          "chapter": 14,
+          "expected": 17,
+          "rendered": 17,
+          "own_metadata": true,
+          "text": 3835
+        },
+        {
+          "chapter": 15,
+          "expected": 21,
+          "rendered": 21,
+          "own_metadata": true,
+          "text": 3996
+        },
+        {
+          "chapter": 16,
+          "expected": 17,
+          "rendered": 17,
+          "own_metadata": true,
+          "text": 4315
+        },
+        {
+          "chapter": 17,
+          "expected": 15,
+          "rendered": 15,
+          "own_metadata": true,
+          "text": 4102
+        },
+        {
+          "chapter": 19,
+          "expected": 14,
+          "rendered": 14,
+          "own_metadata": true,
+          "text": 3548
+        },
+        {
+          "chapter": 20,
+          "expected": 16,
+          "rendered": 16,
+          "own_metadata": true,
+          "text": 3741
+        },
+        {
+          "chapter": 21,
+          "expected": 11,
+          "rendered": 11,
+          "own_metadata": true,
+          "text": 4420
+        },
+        {
+          "chapter": 22,
+          "expected": 19,
+          "rendered": 19,
+          "own_metadata": true,
+          "text": 5438
+        },
+        {
+          "chapter": 23,
+          "expected": 22,
+          "rendered": 22,
+          "own_metadata": true,
+          "text": 4493
+        },
+        {
+          "chapter": 24,
+          "expected": 18,
+          "rendered": 18,
+          "own_metadata": true,
+          "text": 4204
+        },
+        {
+          "chapter": 25,
+          "expected": 15,
+          "rendered": 15,
+          "own_metadata": true,
+          "text": 3153
+        },
+        {
+          "chapter": 26,
+          "expected": 14,
+          "rendered": 14,
+          "own_metadata": true,
+          "text": 3598
+        },
+        {
+          "chapter": 28,
+          "expected": 62,
+          "rendered": 62,
+          "own_metadata": true,
+          "text": 11301
+        }
+      ]
+    },
+    {
+      "name": "Wiki zoeken, categorie plaats en vaste Eden-link blijven bruikbaar",
+      "passed": true,
+      "duration_ms": 187
+    },
+    {
+      "name": "Legenda en informatiescherm worden geladen",
+      "passed": true,
+      "duration_ms": 58
+    },
+    {
+      "name": "Voorwerk uit de RTF is bereikbaar en behoudt tekst bij kleurwissel",
+      "passed": true,
+      "duration_ms": 140,
+      "detail": {
+        "source_rows": 10
+      }
+    },
+    {
+      "name": "Bestaande Genesis 2 RTF-regressiepagina slaagt en opent echte Eden-data",
+      "passed": true,
+      "duration_ms": 297
+    },
+    {
+      "name": "Geen JavaScript-fouten of ontbrekende lokale bestanden",
+      "passed": true,
+      "duration_ms": 0
+    }
+  ],
+  "page_errors": [],
+  "failed_local_requests": []
+}

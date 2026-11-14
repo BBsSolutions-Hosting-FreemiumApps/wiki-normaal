@@ -1,0 +1,11 @@
+{
+  "technical_checks_passed": true,
+  "browser_passed": true,
+  "genesis_data_passed": true,
+  "genesis_source_passed": true,
+  "unit_tests_passed": true,
+  "unit_test_count": 100,
+  "idempotence_passed": true,
+  "publication_approved": false,
+  "safe_to_publish": false
+}

@@ -1,5 +1,7 @@
 # Studiebijbel 2026 — RTF-vervanging (13 november 2026)
 
+Dit is het historische onderzoeksrapport van 13 november. De uitgevoerde conversie en actuele controles staan in [RTF-2026-EINDRAPPORT.md](RTF-2026-EINDRAPPORT.md); de hieronder beschreven onvoltooide converterstatus is door die uitvoering opgevolgd.
+
 ## Bevestiging bronbestand
 - Bestand in GitHub testbranch: `Ai-Elohim-YHWH-Studiebijbel-2026 (3).rtf`.
 - Grootte: **14.092.423 bytes**.

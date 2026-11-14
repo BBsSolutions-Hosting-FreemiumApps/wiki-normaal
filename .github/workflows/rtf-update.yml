@@ -1,0 +1,117 @@
+name: Studiebijbel - RTF testversie bouwen
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: RTF-bestand in deze testbranch
+        required: true
+        default: 'Ai-Elohim-YHWH-Studiebijbel-2026 (3).rtf'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rtf-testversie-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-testsite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RTF_SOURCE: ${{ inputs.source }}
+    steps:
+      - name: Alleen de afgesproken testbranch toestaan
+        env:
+          SELECTED_REF: ${{ github.ref }}
+        run: |
+          test "$SELECTED_REF" = 'refs/heads/update-studiebijbel-2026-11-13' || {
+            echo 'Deze workflow mag uitsluitend op update-studiebijbel-2026-11-13 draaien.' >&2
+            exit 1
+          }
+
+      - name: Lees de gekozen testbranch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Controleer het bronpad
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          root = Path.cwd().resolve()
+          source = (root / os.environ['RTF_SOURCE']).resolve()
+          if not source.is_relative_to(root) or not source.is_file() or source.suffix.lower() != '.rtf':
+              raise SystemExit('De bron moet een bestaand .rtf-bestand binnen de repository zijn.')
+          PY
+
+      - name: Automatische regressietests
+        run: |
+          set -o pipefail
+          mkdir -p work/reports
+          python3 -m unittest discover -s tests -p 'test_*.py' 2>&1 | tee work/reports/unit-tests.txt
+
+      - name: Genesis 2 converteren en controleren
+        run: |
+          python3 tools/convert_rtf.py --source "$RTF_SOURCE" --baseline . --output work/genesis2 --report-dir work/reports/genesis2 --chapter 'Genesis 2'
+          python3 tools/verify_conversion.py work/genesis2 --baseline . --report work/reports/genesis2/verification.json
+          python3 tools/verify_rtf_fidelity.py --source "$RTF_SOURCE" --site work/genesis2 --source-map work/reports/genesis2/source-map.json --report work/reports/genesis2/fidelity.json --partial
+
+      - name: Alle 66 boeken converteren en controleren
+        run: |
+          python3 tools/convert_rtf.py --source "$RTF_SOURCE" --baseline . --output work/testsite --report-dir work/reports/full
+          python3 tools/verify_conversion.py work/testsite --baseline . --report work/reports/full/verification.json
+          python3 tools/verify_rtf_fidelity.py --source "$RTF_SOURCE" --site work/testsite --source-map work/reports/full/source-map.json --report work/reports/full/fidelity.json
+
+      - name: Herhaalbaarheid controleren
+        run: |
+          python3 tools/convert_rtf.py --source "$RTF_SOURCE" --baseline work/testsite --output work/repeated --report-dir work/reports/repeat
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          def manifest(root):
+              return {str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file()}
+          before=manifest(Path('work/testsite/data'))
+          after=manifest(Path('work/repeated/data'))
+          differences=[p for p in sorted(set(before)|set(after)) if before.get(p)!=after.get(p)]
+          result={'passed':not differences,'data_files':len(before),'different_files':differences}
+          Path('work/reports/full/idempotence.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result))
+          if differences:
+              raise SystemExit('Herhaalde conversie levert andere gegevens op')
+          PY
+
+      - name: Markdown eindrapport
+        if: always()
+        run: python3 tools/report_conversion.py --reports work/reports/full --genesis-reports work/reports/genesis2 --output work/reports/full/EINDRAPPORT.md
+
+      - name: Overzicht bij deze uitvoering
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          reports = sorted(str(p) for p in Path('work/reports').rglob('*') if p.is_file())
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as out:
+              out.write('### RTF-testversie\n\n')
+              out.write('Bronbranch: `update-studiebijbel-2026-11-13`.\n\n')
+              out.write('Deze workflow bouwt alleen downloadbare bestanden en rapporten. Er wordt niets gepusht of live gezet.\n\n')
+              out.write('Dataverificatie en brongetrouwheid hebben elk een technische `passed`-status. `safe_to_publish` blijft false: afzonderlijke toestemming van de gebruiker is vereist voor publicatie.\n\n')
+              out.write('\n'.join('- `' + p + '`' for p in reports) or 'Geen rapport aangemaakt; controleer de foutmelding in de stappen.')
+              out.write('\n')
+          PY
+
+      - name: Downloadbare testsite en controlerapporten
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: studiebijbel-rtf-testversie-${{ github.run_id }}
+          path: |
+            work/testsite/
+            work/reports/
+          if-no-files-found: warn
+          retention-days: 30

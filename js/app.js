@@ -19,6 +19,7 @@ SBW.gotBook=function(i,d){SBW.books[i]=d;};
 SBW.gotEnts=function(d){for(var k in d) SBW.ents[k]=d[k];};
 SBW.gotGeo=function(g){SBW.geo=g;};
 SBW.gotMedia=function(g){SBW.media=g;};
+SBW.gotRtfExtra=function(d){SBW.rtfExtra=d;};
 function book(i){return SBW.books[i]?Promise.resolve(SBW.books[i]):load('data/b/'+i+'.js').then(function(){return SBW.books[i];});}
 function ent(id){var m=SBW.meta; if(SBW.ents[id]) return Promise.resolve(SBW.ents[id]); return load('data/e'+(id%m.nch)+'.js').then(function(){return SBW.ents[id];});}
 function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[-'’·ʼ`‘ ]/g,'').toLowerCase();}
@@ -43,12 +44,28 @@ function blockHref(id){var b=SBW.meta.blk[id]; return '#/lees/'+b[0]+'/'+b[1]+'/
 function refHref(label){var m=/^(.*) (\d+):(\d+)/.exec(label); if(!m) return null; var id=findBlock(m[1],+m[2],+m[3]); return id===null?null:blockHref(id);}
 function decorate(s){ // HTML-escaped tekst met codes en verwijzingen
   var h=esc(s);
-  h=h.replace(CODERX,function(c){var t=CODES[c.replace('&amp;','&')]; return t?'<span class="code" data-tip="'+esc(t)+'">'+c+'</span>':c;});
+  h=h.replace(CODERX,function(c){var t=CODES[c.replace('&amp;','&')]; return t?'<span class="code" tabindex="0" role="button" aria-label="'+esc(t)+'" data-tip="'+esc(t)+'">'+c+'</span>':c;});
   h=h.replace(refRx(),function(all,b,c,v){var href=refHref(b+' '+c+':'+v); return href?'<a class="ref" href="'+href+'">'+all+'</a>':all;});
   return h;
 }
 
 /* ---------- lezen ---------- */
+function renderRows(rows){
+  return (rows||[]).map(function(line){
+    if(!line) return '<div class="gap"></div>';
+    var tabs=0;
+    if(line.length&&typeof line[0][0]==='string'){var m=/^\t+/.exec(line[0][0]); if(m) tabs=Math.min(3,m[0].length);}
+    return '<p class="ln t'+tabs+'">'+line.map(function(seg,si){
+      var t=seg[0]; if(si===0) t=t.replace(/^\t+/,'');
+      var st=SBW.meta.sty[seg[1]]||'';
+      if(seg.length>2) return '<span class="x ent" tabindex="0" role="button" data-e="'+seg[2]+'" style="'+esc(st)+'">'+esc(t)+'</span>';
+      return '<span class="x" style="'+esc(st)+'">'+decorate(t)+'</span>';
+    }).join('')+'</p>';
+  }).join('');
+}
+function bindColorButton(){
+  document.getElementById('kleur').onclick=function(){colors=!colors;localStorage.setItem('sbw-kleur',colors?'aan':'uit');this.classList.toggle('on',colors);app.querySelector('.txt').classList.toggle('plain',!colors);};
+}
 function renderRead(bi,c,focus){
   var M=SBW.meta;
   if(bi===undefined||isNaN(bi)){bi=0;}
@@ -65,21 +82,15 @@ function renderRead(bi,c,focus){
     h+='<div class="txt'+(colors?'':' plain')+'">';
     ids.forEach(function(id){
       var bl=B.bl[id];
-      if(bl.h) h+='<div class="head">'+esc(bl.h)+'</div>';
-      if(bl.s) h+='<div class="sub">'+decorate(bl.s)+'</div>';
-      h+='<div class="blk" id="b'+id+'"><a class="lab" href="'+blockHref(id)+'">'+esc(bl.l)+'</a>'+(bl.m?'<span class="marks">'+decorate(bl.m)+'</span>':'');
-      bl.x.forEach(function(line){
-        if(!line){h+='<div class="gap"></div>';return;}
-        var tabs=0; if(line.length&&typeof line[0][0]==='string'){var m=/^\t+/.exec(line[0][0]); if(m) tabs=Math.min(3,m[0].length);}
-        h+='<p class="ln t'+tabs+'">';
-        line.forEach(function(seg,si){
-          var t=seg[0]; if(si===0) t=t.replace(/^\t+/,'');
-          var st=M.sty[seg[1]]||'';
-          if(seg.length>2) h+='<span class="x ent" tabindex="0" role="button" data-e="'+seg[2]+'" style="'+st+'">'+esc(t)+'</span>';
-          else h+='<span class="x" style="'+st+'">'+decorate(t)+'</span>';
-        });
-        h+='</p>';
-      });
+      if(Array.isArray(bl.pre)) h+=renderRows(bl.pre);
+      else {
+        if(bl.h) h+='<div class="head">'+esc(bl.h)+'</div>';
+        if(bl.s) h+='<div class="sub">'+decorate(bl.s)+'</div>';
+      }
+      h+='<div class="blk" id="b'+id+'"><a class="lab" href="'+blockHref(id)+'">'+esc(bl.l)+'</a>';
+      if(Array.isArray(bl.r)) h+=renderRows(bl.r);
+      else if(bl.m) h+='<span class="marks">'+decorate(bl.m)+'</span>';
+      h+=renderRows(bl.x);
       h+='</div>';
     });
     h+='</div>';
@@ -91,7 +102,7 @@ function renderRead(bi,c,focus){
     app.innerHTML=h;
     document.getElementById('selB').onchange=function(){location.hash='#/lees/'+this.value;};
     document.getElementById('selC').onchange=function(){location.hash='#/lees/'+bi+'/'+this.value;};
-    document.getElementById('kleur').onclick=function(){colors=!colors;localStorage.setItem('sbw-kleur',colors?'aan':'uit');this.classList.toggle('on',colors);app.querySelector('.txt').classList.toggle('plain',!colors);};
+    bindColorButton();
     if(focus!==undefined){var el=document.getElementById('b'+focus); if(el){el.scrollIntoView({block:'start'}); window.scrollBy(0,-110); el.style.background='#fff3c4'; setTimeout(function(){el.style.background='';},2200);}}
     else window.scrollTo(0,0);
   }).catch(function(e){app.innerHTML='<p>'+esc(e.message)+'</p>';});
@@ -244,7 +255,7 @@ function openEnt(id){
     h+='<div class="refs" id="refs">'+refs.slice(0,40).join('')+(refs.length>40?' <button id="moreRefs">Alle '+refs.length+(d.on>refs.length?' (van '+d.on+')':'')+' tonen</button>':'')+'</div>';
     if(d.nt.length){h+='<h3>Aantekeningen (studynotes)</h3>'+d.nt.map(function(i){var n=M.notes[i],hr=n.r?refHref(n.r):null;return '<div class="note"><span class="small">['+n.n+']'+(n.r?' · '+(hr?'<a href="'+hr+'">'+esc(n.r)+'</a>':esc(n.r)):'')+'</span><br>'+decorate(n.t)+'</div>';}).join('')+(d.ntn>d.nt.length?'<p class="small">Nog '+(d.ntn-d.nt.length)+' aantekening(en) noemen deze naam.</p>':'');}
     h+='<h3>Waarop deze indeling berust</h3><p class="why">'+esc(C[1])+'.<br>'+d.why.map(esc).join('<br>')+(d.lst?'<br>Ook in de naamlijst van deze wiki als '+esc(T[0])+'.':'')+'</p>';
-    var slotTxt='De verzen en feiten komen uit de Elohim YHWH Studiebijbel v9 en de studynotes. Er is geen biografie bijgeschreven.';
+    var slotTxt=M.conversion?'De wiki-gegevens en studynotes zijn behouden uit de bestaande wiki; de leestekst en bronopmaak zijn bijgewerkt uit '+esc(M.conversion.source)+'. Er is geen biografie bijgeschreven.':'De verzen en feiten komen uit de Elohim YHWH Studiebijbel v9 en de studynotes. Er is geen biografie bijgeschreven.';
     if(d.tl&&d.tl.length) slotTxt+=' De datering is daaruit overgenomen.';
     if(plaats) slotTxt+=' De kaart hoort daar niet bij: u ziet de huidige ligging.';
     if(beelden&&beelden.length) slotTxt+=' De afbeelding hoort daar niet bij; auteur en licentie staan erbij.';
@@ -260,7 +271,7 @@ function openEnt(id){
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 document.getElementById('panelClose').onclick=function(){clearLigging(); panel.hidden=true;};
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){clearLigging(); panel.hidden=true;} if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ent')){e.preventDefault();openEnt(+e.target.dataset.e);}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){clearLigging(); panel.hidden=true;} if((e.key==='Enter'||e.key===' ')&&e.target.classList){if(e.target.classList.contains('ent')){e.preventDefault();openEnt(+e.target.dataset.e);}else if(e.target.classList.contains('code')){e.preventDefault();showTip(e.target);}}});
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-e]'); if(t){e.preventDefault(); openEnt(+t.dataset.e); return;}
   var c=e.target.closest('.code'); if(c){showTip(c); return;}
@@ -295,11 +306,12 @@ function renderWiki(type,q){
   app.querySelectorAll('.tabs button').forEach(function(b){b.onclick=function(){location.hash='#/wiki/'+b.dataset.t;};});
 }
 function renderOver(){
-  var S=SBW.meta.stats,ps=S.perSoortZekerheid;
+  var S=SBW.meta.stats,ps=S.perSoortZekerheid,conversion=SBW.meta.conversion;
+  var source=conversion?'<p>De tekst en bronopmaak zijn bijgewerkt uit <b>'+esc(conversion.source)+'</b>. De bestaande wiki-identiteiten, wiki-gegevens en studynotes zijn behouden. <a href="#/bron">Voorwerk uit de RTF lezen</a>.</p>':'<p>Deze wiki is gemaakt uit de Elohim YHWH Studiebijbel 2026 (v9) van Jan Smit, de bijbehorende studynotes en de officiële legenda.</p>';
   var rows=['P','V','S','L','W','R','O','U'].map(function(t){var n=TYPES[t][0],x=ps[n]||{};return '<tr><td>'+TYPES[t][1]+'</td><td>'+(S.soorten[n]||0)+'</td><td>'+(x.zeker||0)+' / '+(x.waarschijnlijk||0)+' / '+(x.onzeker||0)+'</td></tr>';}).join('');
   app.innerHTML='<section class="page"><h1>Over deze wiki</h1>'+
   '<p class="notice">Dit is een voorbeeld (preview). Het staat niet online en is nog niet gecontroleerd door de redactie.</p>'+
-  '<p>Deze wiki is gemaakt uit de Elohim YHWH Studiebijbel 2026 (v9) van Jan Smit, de bijbehorende studynotes en de officiële legenda. U leest de tekst per boek en hoofdstuk; namen van personen, volken, steden, landen, rivieren, meren, zeeën en regio’s zijn aan te tikken.</p>'+
+  source+'<p>U leest de tekst per boek en hoofdstuk; namen van personen, volken, steden, landen, rivieren, meren, zeeën en regio’s zijn aan te tikken.</p>'+
   '<h2>Wat staat er in een popup?</h2><ol><li>Wie of wat het is, en waarop dat berust (legendakleur, zinnen in de tekst of een naamlijst).</li><li>Als de studiebijbel dezelfde naam voor verschillende personen gebruikt, een korte aanduiding uit de tekst en een link naar de anderen.</li><li>Bij Jeruzalem, Egypte en de rivier de Jordaan: een kaart met de huidige ligging.</li><li>Bij een aantal bekende plaatsen: een foto of een historische kaart, met auteur, licentie en bron.</li><li>Wat de tekst zelf zegt. “Zoon van”, “koning van” en verwante woorden zijn een link als de tekst één persoon of plaats aanwijst.</li><li>Een datering, alleen als de studiebijbel die zelf bij de naam zet.</li><li>De belangrijkste verzen, letterlijk geciteerd, met een link.</li><li>Alle plaatsen waar de naam voorkomt en de aantekeningen die de naam noemen.</li></ol>'+
   '<p>De kaart toont de huidige ligging uit OpenStreetMap (Nominatim, 12 november 2026), geen historische reconstructie. Bij Egypte ziet u de moderne landsgrens, geen bijbelse grens. Een naam zonder regel in de kaartgegevens krijgt geen kaart. Een naam zonder gelicenseerde afbeelding krijgt geen leeg vak. Van personen wordt geen portret getoond.</p>'+
   '<p>Er worden geen levensverhalen bijgeschreven. Staat er in de tekst niets over de rol of het doel van iemand, dan blijft de popup kort en verwijst naar de verzen.</p>'+
@@ -307,17 +319,29 @@ function renderOver(){
   '<p class="small">Tekstblokken (verzen of versgroepen): '+S.blokken+'. Aantekeningen: '+SBW.meta.notes.length+'.</p>'+
   '<h2>Zekerheid</h2><ol><li><b>zeker</b>: '+CERT.z[1]+'.</li><li><b>waarschijnlijk</b>: '+CERT.w[1]+'.</li><li><b>onzeker</b>: '+CERT.o[1]+'.</li></ol></section>';
 }
+function renderBron(){
+  app.innerHTML='<p class="loading">Voorwerk wordt geladen…</p>';
+  (SBW.rtfExtra?Promise.resolve():load('data/rtf-extra.js')).then(function(){
+    if(location.hash.replace(/^#\/?/,'').split('/')[0]!=='bron') return;
+    var extra=SBW.rtfExtra;
+    if(!extra) throw new Error('Het voorwerk uit de RTF ontbreekt.');
+    app.innerHTML='<section class="page"><div class="bar"><a href="#/over">← Over deze wiki</a><button id="kleur" class="'+(colors?'on':'')+'" title="Kleuren uit de studiebijbel aan of uit">Kleuren</button></div><h1>'+esc(extra.title||'Voorwerk uit de RTF')+'</h1><div class="txt'+(colors?'':' plain')+'">'+renderRows(extra.rows)+'</div></section>';
+    bindColorButton();
+    window.scrollTo(0,0);
+  }).catch(function(e){app.innerHTML='<p>'+esc(e.message)+'</p>';});
+}
 function renderLegenda(){app.innerHTML=''; app.appendChild(document.getElementById('tpl-legenda').content.cloneNode(true));}
 
 /* ---------- router ---------- */
 function route(){
   var h=location.hash.replace(/^#\/?/,''),p=h.split('/');
-  document.querySelectorAll('nav a').forEach(function(a){a.classList.toggle('on',a.dataset.nav===(p[0]==='e'?'wiki':(p[0]||'lees')));});
+  document.querySelectorAll('nav a').forEach(function(a){a.classList.toggle('on',a.dataset.nav===(p[0]==='e'?'wiki':(p[0]==='bron'?'over':(p[0]||'lees'))));});
   tip.hidden=true; if(p[0]!=='e'){clearLigging(); panel.hidden=true;}
   if(p[0]==='wiki') renderWiki(p[1]);
   else if(p[0]==='e'){ if(!app.querySelector('#list')) renderWiki(SBW.meta.ents[+p[1]]?SBW.meta.ents[+p[1]][1]:'P'); openEnt(+p[1]); }
   else if(p[0]==='legenda') renderLegenda();
   else if(p[0]==='over') renderOver();
+  else if(p[0]==='bron') renderBron();
   else renderRead(p[1]!==undefined?+p[1]:undefined,p[2]?+p[2]:undefined,p[3]!==undefined?+p[3]:undefined);
 }
 Promise.all([

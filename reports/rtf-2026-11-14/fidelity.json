@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "partial": false,
+  "source_sha256": "4cf082bd418517b301240735b4ede690b09f2372e13ca5c1e4aac59b48935392",
+  "errors": [],
+  "error_counts": {},
+  "error_count": 0,
+  "warnings": [],
+  "counts": {
+    "source_lines": 217428,
+    "source_books": 66,
+    "site_blocks": 17807,
+    "compared_nonwhitespace_characters": 4261529,
+    "compared_fields": 53331,
+    "mapped_blocks": 17807,
+    "legacy_empty_blocks": 1,
+    "covered_source_lines": 217428,
+    "uncovered_source_lines": 0,
+    "multiply_covered_source_lines": 0,
+    "text_mismatched_characters": 0,
+    "format_mismatched_characters": 0
+  }
+}
